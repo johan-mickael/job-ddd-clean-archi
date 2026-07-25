@@ -17,9 +17,10 @@ if [ "$1" = 'frankenphp' ] || [ "$1" = 'php' ] || [ "$1" = 'bin/console' ]; then
 		composer require "php:>=$PHP_VERSION"
 		composer config --json extra.symfony.docker 'true'
 
-		# Remove the project install block from this script and the compose.yaml
-		sed -i '/^\t###> dunglas\/symfony-docker ###/,/^\t###< dunglas\/symfony-docker ###/d' frankenphp/docker-entrypoint.sh
-		sed -i '/###> dunglas\/symfony-docker ###/,/###< dunglas\/symfony-docker ###/d' compose.yaml
+		# Self-cleanup of the install block is skipped: compose.yaml lives at the
+		# repo root (orchestrates api/ + web/ + future services), one level above
+		# this bind-mounted /app, so it isn't reachable from inside the container.
+		# The markers are harmless once composer.json is no longer '{}'.
 
 		if grep -q ^DATABASE_URL= .env; then
 			echo 'To finish the installation please press Ctrl+C to stop Docker Compose and run: docker compose up --build --wait'

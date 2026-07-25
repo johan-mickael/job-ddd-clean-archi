@@ -14,7 +14,7 @@ cite the file and line. Approve nothing that violates a hard rule.
 Review only the changed files (use `git diff --name-only` and `git diff`). For each, check:
 
 1. **Layering** — Domain/Application import nothing from Symfony, Doctrine, Infrastructure, or Presentation. Dependencies point inward. Cross-context access goes through Application, not internals.
-2. **File organization** — one type per file; class not oversized; lives in the correct `Context/Layer` package.
+2. **File organization** — one type per file; class not oversized; lives in the correct `Layer\Context\` package (`Domain\`, `Application\`, `Infrastructure\`, `Presentation\` as top PSR-4 roots).
 3. **PHP 8** — `declare(strict_types=1)`; `final`; fully typed, no `mixed`; `readonly` on VOs/DTOs; backed enums not string constants.
 4. **DDD tactics** — no anemic models; invariants inside aggregates; IDs are Value Objects; rule-bearing primitives wrapped; collections encapsulated; repositories return domain objects; persistence entity ≠ domain object (Mapper present).
 5. **Naming / ubiquitous language** — intention-revealing; no `create/update/manage/handle/process` in Domain; exception names tell the story.

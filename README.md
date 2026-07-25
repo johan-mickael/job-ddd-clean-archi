@@ -1,60 +1,35 @@
-# Symfony Docker
+# Semantic Job Search & CV Matching
 
-A [Docker](https://www.docker.com/)-based installer and runtime for the [Symfony](https://symfony.com) web framework,
-with [FrankenPHP](https://frankenphp.dev) and [Caddy](https://caddyserver.com/) inside!
+Portfolio-grade DDD/Clean Architecture app matching CVs to France Travail job
+offers via hybrid (BM25 + kNN) search. Full product/architecture rules live in
+[`CLAUDE.md`](CLAUDE.md); the PHP coding standard lives in
+[`.claude/skills/php-ddd-clean-architecture`](.claude/skills/php-ddd-clean-architecture/SKILL.md).
 
-Coding-agents ready: ships with a [Dev Container](https://containers.dev/) and a [one-page guide](docs/agents.md)
-to run [OpenCode](https://opencode.ai), [Claude Code](https://claude.ai/claude-code), or any AI coding assistant,
-against a local or a remote model, with an optional network sandbox.
+## Layout
 
-![CI](https://github.com/dunglas/symfony-docker/workflows/CI/badge.svg)
+```
+api/    Symfony 7 / FrankenPHP backend — Domain, Application, Infrastructure,
+        Presentation as top-level PSR-4 namespaces (see the coding-standard
+        skill). See api/README.md for the FrankenPHP/Docker base image itself.
+web/    Vue 3 + Vite + Tailwind SPA, talks to api/ over HTTP.
+```
 
-## Getting Started
+`compose.yaml` (+ `compose.override.yaml` for dev, `compose.prod.yaml` for
+prod) orchestrates the stack from the repo root; the `php` service builds
+from `./api`. Postgres, Elasticsearch, and a `web` service are added as later
+build phases reach them (see `CLAUDE.md` §10) — don't wire them ahead of the
+phase that needs them.
 
-1. If not already done, [install Docker Compose](https://docs.docker.com/compose/install/) (v2.10+)
-2. Run `docker compose build --pull --no-cache` to build fresh images
-3. Run `docker compose up --wait` to set up and start a fresh Symfony project
-4. Open `https://localhost` in your favorite web browser and [accept the auto-generated TLS certificate](https://stackoverflow.com/a/15076602/1352334)
-5. Run `docker compose down --remove-orphans` to stop the Docker containers.
+## Getting started
 
-## Features
+```
+docker compose build --no-cache
+docker compose up -d
+```
 
-- Production, development and CI ready
-- Just 1 service by default
-- Super-readable configuration
-- Blazing-fast performance thanks to [the worker mode of FrankenPHP](https://frankenphp.dev/docs/worker/)
-- [Installation of extra Docker Compose services](docs/extra-services.md) with Symfony Flex
-- Automatic HTTPS (in dev and prod)
-- HTTP/3 and [Early Hints](https://symfony.com/blog/new-in-symfony-6-3-early-hints) support
-- Real-time messaging thanks to a built-in [Mercure hub](https://symfony.com/doc/current/mercure.html)
-- [Vulcain](https://vulcain.rocks) support
-- Native [XDebug](docs/xdebug.md) integration
-- [Hot Reloading](https://frankenphp.dev/docs/hot-reload/)
-- [Dev Container](https://containers.dev/) support
-- [AI coding agents](docs/agents.md) with an optional network sandbox
-- Rootless, slim production image
+First boot installs the Symfony skeleton into `api/` automatically (see
+`api/frankenphp/docker-entrypoint.sh`).
 
-**Enjoy!**
-
-## Docs
-
-1. [Options available](docs/options.md)
-2. [Using Symfony Docker with an existing project](docs/existing-project.md)
-3. [Support for extra services](docs/extra-services.md)
-4. [Deploying in production](docs/production.md)
-5. [Debugging with Xdebug](docs/xdebug.md)
-6. [TLS Certificates](docs/tls.md)
-7. [Using MySQL instead of PostgreSQL](docs/mysql.md)
-8. [Using Alpine Linux instead of Debian](docs/alpine.md)
-9. [Using a Makefile](docs/makefile.md)
-10. [Updating the template](docs/updating.md)
-11. [Troubleshooting](docs/troubleshooting.md)
-12. [Using AI coding agents](docs/agents.md)
-
-## License
-
-Symfony Docker is available under the MIT License.
-
-## Credits
-
-Created by [Kévin Dunglas](https://dunglas.dev), co-maintained by [Maxime Helias](https://twitter.com/maxhelias) and sponsored by [Les-Tilleuls.coop](https://les-tilleuls.coop).
+```
+cd web && npm install && npm run dev
+```

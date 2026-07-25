@@ -34,16 +34,37 @@ Presentation    ← depends on Application (Commands, Queries, Results)
 
 - **One type per file**, file named after it (PSR-4). Never two classes in one file.
 - **Prefer many small, well-named files over few large ones.** A big class hides several responsibilities. Class > ~150–200 lines or method > ~20 lines → extract into named collaborators.
-- **Screaming architecture** — package by bounded context first, then layer. No top-level `Entity/`, `Service/`, `Repository/`, `Controller/` buckets.
+- **Layer-first packaging, bounded context second.** Each layer is its own PSR-4 root — this is what makes the dependency rule physically inspectable (no `App\` catch-all): `Domain\`, `Application\`, `Infrastructure\`, `Presentation\`, each mapped to `api/src/<Layer>/`. Bounded context is the namespace segment right under the layer. No `Entity/`, `Service/`, `Repository/`, `Controller/` buckets below that.
   ```
-  src/
-    Ingestion/{Domain,Application,Infrastructure}/
-    Catalog/{Domain,Application,Infrastructure,Presentation}/
-    Search/{Domain,Application,Infrastructure}/
-    CandidateProfile/{Domain,Application,Infrastructure,Presentation}/
-    Matching/{Domain,Application,Infrastructure,Presentation}/
-    Shared/            ← tiny, stable, cross-context kernel only
+  api/src/
+    Domain/
+      Ingestion/…  Catalog/…  Search/…  CandidateProfile/…  Matching/…
+      Shared/            ← tiny, stable, cross-context kernel only
+    Application/
+      Catalog/PublishJob/{PublishJob.php,PublishJobHandler.php}
+      Matching/…
+    Infrastructure/
+      Persistence/Doctrine/Catalog/{JobEntity.php,JobMapper.php,DoctrineJobRepository.php}
+      Search/Elasticsearch/…
+      FranceTravail/…
+    Presentation/
+      Http/Catalog/JobController.php
+      Http/Matching/…
   ```
+  composer.json:
+  ```json
+  "autoload": {
+    "psr-4": {
+      "Domain\\": "src/Domain/",
+      "Application\\": "src/Application/",
+      "Infrastructure\\": "src/Infrastructure/",
+      "Presentation\\": "src/Presentation/",
+      "App\\": "src/App/"
+    }
+  }
+  ```
+  `App\` stays a tiny, separate root reserved for Symfony's own bootstrap (`Kernel`, `bin/console` wiring) — it is not a layer and nothing else lives there. deptrac layers are defined on these same four namespace roots, so a Domain class importing `Infrastructure\...` is a build-breaking violation, not a style nit.
+- Class example: `Domain\Catalog\Job` (not `App\Catalog\Domain\Job`). Same class in the old context-first layout would have been `Catalog\Domain\Job` — the context is still fully addressable, just nested one level differently.
 
 ## 3. SOLID
 
@@ -100,23 +121,32 @@ Presentation    ← depends on Application (Commands, Queries, Results)
 - **Application:** one Command/Query per use case (promoted-constructor DTO, no logic); one Handler each (single `__invoke`); handlers **orchestrate only** (fetch → call domain method → persist → dispatch). Any business `if` belongs in the Domain. Read Queries may bypass the domain for performance, returning immutable **Result** DTOs — never entities.
 - **Persistence ≠ domain.** The Doctrine entity is a separate Infrastructure class translated by a **Mapper** (structural only). No Doctrine attributes on domain objects.
 
-## 9. Error Handling
+## 9. CQRS — how far we go, and why
+
+CQRS is **justified here, but only in its lite form** — command/query separation plus a genuinely separate read store, not event sourcing or a bespoke bus framework.
+
+- **Why it's justified:** the architecture already has a real read/write split baked in — Postgres is the write model (`Job` aggregate, invariants enforced), Elasticsearch is a **derived, rebuildable read model** (denormalized doc + `dense_vector`, projected on change). That's the expensive, load-bearing half of CQRS, and it exists for a real reason (hybrid BM25+kNN search needs a shape Postgres can't serve). Skipping it would mean bolting search relevance logic onto the aggregate — worse coupling, not simpler.
+- **What "lite" means in code:** every use case is already a Command or a Query (§8) — never both (Command–Query Separation, §5). Commands go through Domain (`fetch → call domain method → persist → dispatch`). Queries **may** bypass Domain and read straight from Elasticsearch or a Postgres read projection, returning immutable Result DTOs.
+- **No separate Command Bus / Query Bus abstraction.** Symfony Messenger already exists for genuinely async work (ingestion, embedding) — reuse it for commands that need to be async; call synchronous Handlers directly (constructor-injected, autowired) otherwise. Introducing a bus just to have "a CQRS framework" violates §10 KISS/YAGNI and CLAUDE.md's ban on orchestration frameworks.
+- **No event sourcing.** Aggregates persist current state; Domain Events (§8) are for integration/projection triggers (e.g. re-index on `OfferIngested`), not as the system of record.
+
+## 10. Error Handling
 
 - **Every throw is a custom domain exception.** Never throw raw `\Exception`, `\RuntimeException`, `\InvalidArgumentException`, `\DomainException`.
-- Name describes what went wrong in ubiquitous language; constructor takes only what the message needs. Group per aggregate under `{Context}/Domain/.../Exception/`.
+- Name describes what went wrong in ubiquitous language; constructor takes only what the message needs. Group per aggregate under `Domain/{Context}/.../Exception/`.
 - **Fail fast** at construction (VOs) and boundaries.
 - **Never swallow** exceptions. Catch only to handle or translate.
 - Exceptions for exceptional flow, **not control flow** (no-matches-found is a return value).
 - **Translate at boundaries:** a 429 from the embedding API, an ES timeout, RabbitMQ down → caught in the adapter, re-thrown as a domain exception. The domain never sees an HTTP status or a Doctrine exception.
 - **LLM/API output is untrusted:** `json_validate()` then schema-validate hard before it enters the domain; malformed → domain exception, never a half-populated profile.
 
-## 10. KISS · DRY · YAGNI
+## 11. KISS · DRY · YAGNI
 
 - **KISS** — simplest design that correctly models the domain. No pattern for its own sake.
 - **DRY is about knowledge, not text** — look-alike code that changes for different reasons is not duplication; don't couple it.
 - **YAGNI** — build only the current use case. The DB-queue→RabbitMQ transport seam is allowed only because it's a real planned phase.
 
-## 11. Tests & Tooling
+## 12. Tests & Tooling
 
 - Tests are first-class code and follow every rule here. PHPUnit; one logical assertion per test; behavior-named tests (`expiredOffersAreRemovedOnSync`). Domain + Application unit-testable with zero infrastructure. Test through public API; mock only ports, never your own domain logic.
 - No magic numbers/strings — enums, typed constants, VOs.
@@ -124,8 +154,8 @@ Presentation    ← depends on Application (Commands, Queries, Results)
 
 ## Checklist Before Committing Any Class
 
-1. Right context + layer; depends only inward; no framework in Domain/Application?
-2. One type per file, named after it, in the right context package?
+1. Right layer + context; depends only inward; no framework in Domain/Application?
+2. One type per file, named after it, in the right `Layer\Context\` package?
 3. Small and single-responsibility — not two things hiding together?
 4. `strict_types`, `final`, fully typed, `readonly` where immutable, no `mixed`?
 5. Ubiquitous language; no CRUD/tech verbs in Domain?
