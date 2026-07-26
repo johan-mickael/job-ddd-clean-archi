@@ -34,4 +34,17 @@ final class ReciprocalRankFusionTest extends TestCase
     {
         self::assertSame([], (new ReciprocalRankFusion())->fuse([[], []]));
     }
+
+    public function testAHeavilyWeightedListCanOutrankATopRankInAnUnweightedOne(): void
+    {
+        $fused = (new ReciprocalRankFusion())->fuse(
+            [
+                ['b'],
+                ['a'],
+            ],
+            [0.7, 0.3],
+        );
+
+        self::assertSame(['b', 'a'], \array_keys($fused));
+    }
 }

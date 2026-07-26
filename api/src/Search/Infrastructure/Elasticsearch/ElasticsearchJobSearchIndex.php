@@ -19,6 +19,26 @@ final class ElasticsearchJobSearchIndex implements JobSearchIndexInterface
     private const int RANK_WINDOW_SIZE = 50;
     private const int RESULT_SIZE = 20;
 
+    /**
+     * Lexical dominates: a literal token match ("PHP") is a stronger
+     * relevance signal than embedding proximity for skill/technology
+     * search, and this corpus is entirely software-dev roles (ingestion
+     * is scoped to ROME M1805), so "PHP" and "Java" postings sit close in
+     * vector space regardless of tuning. kNN still matters for genuine
+     * paraphrase queries ("no degree required") that share no vocabulary
+     * with the listing - it just shouldn't outrank an exact keyword hit.
+     */
+    private const float LEXICAL_WEIGHT = 0.7;
+    private const float SEMANTIC_WEIGHT = 0.3;
+
+    /**
+     * Empirically calibrated (2026-07-26) against the real indexed corpus:
+     * on-topic kNN matches scored ~0.79-0.83, the weakest tail ~0.75-0.77.
+     * cosine similarity on this dense_vector field is normalized to
+     * (1 + cosine) / 2, so this is on a 0-1 scale, not raw cosine.
+     */
+    private const float MIN_SEMANTIC_SIMILARITY = 0.78;
+
     public function __construct(
         private readonly Client $client,
         private readonly ReciprocalRankFusion $rankFusion,
@@ -93,10 +113,13 @@ final class ElasticsearchJobSearchIndex implements JobSearchIndexInterface
             $sourceById[$hit['_id']] = $hit['_source'];
         }
 
-        $fusedScores = $this->rankFusion->fuse([
-            \array_column($lexicalHits, '_id'),
-            \array_column($semanticHits, '_id'),
-        ]);
+        $fusedScores = $this->rankFusion->fuse(
+            [
+                \array_column($lexicalHits, '_id'),
+                \array_column($semanticHits, '_id'),
+            ],
+            [self::LEXICAL_WEIGHT, self::SEMANTIC_WEIGHT],
+        );
 
         $results = [];
         foreach (\array_slice($fusedScores, 0, self::RESULT_SIZE, true) as $id => $score) {
@@ -201,6 +224,7 @@ final class ElasticsearchJobSearchIndex implements JobSearchIndexInterface
                 'query_vector' => $queryEmbedding,
                 'k' => self::RANK_WINDOW_SIZE,
                 'num_candidates' => 200,
+                'similarity' => self::MIN_SEMANTIC_SIMILARITY,
                 'filter' => ['bool' => ['filter' => $this->filters($query)]],
             ],
             'size' => self::RANK_WINDOW_SIZE,
