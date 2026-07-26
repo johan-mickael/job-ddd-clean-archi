@@ -1,1 +1,105 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn-vue/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+    --font-sans: "InterVariable", ui-sans-serif, sans-serif;
+    --font-heading: "Space Grotesk Variable", ui-sans-serif, sans-serif;
+    --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+    --color-sidebar-ring: var(--sidebar-ring);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar: var(--sidebar);
+    --color-signal: var(--signal);
+    --color-signal-foreground: var(--signal-foreground);
+    --color-ember: var(--ember);
+    --color-ember-foreground: var(--ember-foreground);
+    --color-chart-5: var(--chart-5);
+    --color-chart-4: var(--chart-4);
+    --color-chart-3: var(--chart-3);
+    --color-chart-2: var(--chart-2);
+    --color-chart-1: var(--chart-1);
+    --color-ring: var(--ring);
+    --color-input: var(--input);
+    --color-border: var(--border);
+    --color-destructive: var(--destructive);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-accent: var(--accent);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-muted: var(--muted);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-secondary: var(--secondary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-primary: var(--primary);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-popover: var(--popover);
+    --color-card-foreground: var(--card-foreground);
+    --color-card: var(--card);
+    --color-foreground: var(--foreground);
+    --color-background: var(--background);
+    --radius-sm: calc(var(--radius) - 4px);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) + 4px);
+}
+
+/*
+ * "Vector space" theme - the product's identity is a single dark register,
+ * not a light/dark toggle: this is a semantic search engine, and the palette
+ * leans into that (deep navy = the embedding space, violet = the model's own
+ * signal, amber = the one thing a human actually does here: apply).
+ */
+:root {
+    --background: #0a0e1a;
+    --foreground: #e8eaf6;
+    --card: #131a2e;
+    --card-foreground: #e8eaf6;
+    --popover: #131a2e;
+    --popover-foreground: #e8eaf6;
+    --primary: #8b7fff;
+    --primary-foreground: #0a0e1a;
+    --secondary: #1a2238;
+    --secondary-foreground: #e8eaf6;
+    --muted: #131a2e;
+    --muted-foreground: #8891b8;
+    --accent: #1a2238;
+    --accent-foreground: #e8eaf6;
+    --destructive: #e5484d;
+    --border: rgb(255 255 255 / 8%);
+    --input: rgb(255 255 255 / 12%);
+    --ring: #8b7fff;
+    --signal: #8b7fff;
+    --signal-foreground: #0a0e1a;
+    --ember: #f0a857;
+    --ember-foreground: #1a1002;
+    --chart-1: #8b7fff;
+    --chart-2: #f0a857;
+    --chart-3: #6ee7d6;
+    --chart-4: #8891b8;
+    --chart-5: #e5484d;
+    --radius: 0.75rem;
+    --sidebar: #0a0e1a;
+    --sidebar-foreground: #e8eaf6;
+    --sidebar-primary: #8b7fff;
+    --sidebar-primary-foreground: #0a0e1a;
+    --sidebar-accent: #1a2238;
+    --sidebar-accent-foreground: #e8eaf6;
+    --sidebar-border: rgb(255 255 255 / 8%);
+    --sidebar-ring: #8b7fff;
+}
+
+@layer base {
+    * {
+        @apply border-border outline-ring/50;
+    }
+    body {
+        @apply bg-background text-foreground;
+        @apply font-sans;
+    }
+}
