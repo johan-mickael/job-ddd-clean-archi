@@ -109,3 +109,13 @@ jobs:
           VALIDATE_TRIVY: false
           VALIDATE_BIOME_FORMAT: false
           VALIDATE_BIOME_LINT: false
+          # PHP is already covered by the static-analysis job (phpstan,
+          # cs-fixer, deptrac) against our actual Docker image/PHP version.
+          # super-linter's own composer install uses its bundled PHP 8.4
+          # runtime, which is missing ext-xml and doesn't satisfy this
+          # project's >=8.5.8 requirement - that's an environment mismatch
+          # in the linter container, not a real problem with the project.
+          VALIDATE_PHP_BUILTIN: false
+          VALIDATE_PHP_PHPCS: false
+          VALIDATE_PHP_PHPSTAN: false
+          VALIDATE_PHP_PSALM: false
