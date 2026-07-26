@@ -16,6 +16,7 @@ final readonly class CandidateProfile
      */
     private function __construct(
         public CandidateProfileId $id,
+        public string $ownerId,
         public string $sourceFileName,
         public \DateTimeImmutable $extractedAt,
         public SeniorityLevel $seniority,
@@ -33,6 +34,7 @@ final readonly class CandidateProfile
      */
     public static function extractedFrom(
         CandidateProfileId $id,
+        string $ownerId,
         string $sourceFileName,
         \DateTimeImmutable $extractedAt,
         SeniorityLevel $seniority,
@@ -41,6 +43,10 @@ final readonly class CandidateProfile
         array $languages,
         array $skills,
     ): self {
+        if (\trim($ownerId) === '') {
+            throw InvalidCvProfileData::becauseOfField('ownerId', 'must not be blank.');
+        }
+
         if (\trim($sourceFileName) === '') {
             throw InvalidCvProfileData::becauseOfField('sourceFileName', 'must not be blank.');
         }
@@ -55,7 +61,7 @@ final readonly class CandidateProfile
             throw InvalidCvProfileData::becauseOfField('roles', 'must contain at least one entry.');
         }
 
-        return new self($id, $sourceFileName, $extractedAt, $seniority, $domains, $roles, $languages, $skills);
+        return new self($id, $ownerId, $sourceFileName, $extractedAt, $seniority, $domains, $roles, $languages, $skills);
     }
 
     /**

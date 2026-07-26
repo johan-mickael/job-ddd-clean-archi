@@ -8,6 +8,7 @@ final readonly class MatchJobsToProfile
 {
     public function __construct(
         public string $candidateProfileId,
+        public string $requesterId,
         public int $page = 1,
         public int $pageSize = 20,
     ) {}

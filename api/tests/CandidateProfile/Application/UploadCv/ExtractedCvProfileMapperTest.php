@@ -30,6 +30,7 @@ final class ExtractedCvProfileMapperTest extends TestCase
                 'skills' => [['label' => 'PHP', 'yearsOfExperience' => 5]],
             ],
             new CandidateProfileId('0198a1b2-0000-7000-8000-000000000001'),
+            'owner-1',
             'cv.pdf',
             new \DateTimeImmutable('2026-07-26'),
         );
@@ -45,6 +46,7 @@ final class ExtractedCvProfileMapperTest extends TestCase
         $profile = $this->mapper->toCandidateProfile(
             $this->validPayload(['skills' => [['label' => 'PHP']]]),
             new CandidateProfileId('0198a1b2-0000-7000-8000-000000000001'),
+            'owner-1',
             'cv.pdf',
             new \DateTimeImmutable('2026-07-26'),
         );
@@ -59,6 +61,7 @@ final class ExtractedCvProfileMapperTest extends TestCase
         $this->mapper->toCandidateProfile(
             $this->validPayload(['seniority' => 'godlike']),
             new CandidateProfileId('0198a1b2-0000-7000-8000-000000000001'),
+            'owner-1',
             'cv.pdf',
             new \DateTimeImmutable('2026-07-26'),
         );
@@ -71,6 +74,7 @@ final class ExtractedCvProfileMapperTest extends TestCase
         $this->mapper->toCandidateProfile(
             $this->validPayload(['seniority' => 7]),
             new CandidateProfileId('0198a1b2-0000-7000-8000-000000000001'),
+            'owner-1',
             'cv.pdf',
             new \DateTimeImmutable('2026-07-26'),
         );
@@ -83,6 +87,7 @@ final class ExtractedCvProfileMapperTest extends TestCase
         $this->mapper->toCandidateProfile(
             $this->validPayload(['domains' => 'backend']),
             new CandidateProfileId('0198a1b2-0000-7000-8000-000000000001'),
+            'owner-1',
             'cv.pdf',
             new \DateTimeImmutable('2026-07-26'),
         );
@@ -95,6 +100,7 @@ final class ExtractedCvProfileMapperTest extends TestCase
         $this->mapper->toCandidateProfile(
             $this->validPayload(['domains' => [42]]),
             new CandidateProfileId('0198a1b2-0000-7000-8000-000000000001'),
+            'owner-1',
             'cv.pdf',
             new \DateTimeImmutable('2026-07-26'),
         );
@@ -107,6 +113,7 @@ final class ExtractedCvProfileMapperTest extends TestCase
         $this->mapper->toCandidateProfile(
             $this->validPayload(['languages' => [['name' => 'French', 'proficiency' => 'perfect']]]),
             new CandidateProfileId('0198a1b2-0000-7000-8000-000000000001'),
+            'owner-1',
             'cv.pdf',
             new \DateTimeImmutable('2026-07-26'),
         );
@@ -119,6 +126,7 @@ final class ExtractedCvProfileMapperTest extends TestCase
         $this->mapper->toCandidateProfile(
             $this->validPayload(['skills' => [['yearsOfExperience' => 3]]]),
             new CandidateProfileId('0198a1b2-0000-7000-8000-000000000001'),
+            'owner-1',
             'cv.pdf',
             new \DateTimeImmutable('2026-07-26'),
         );
@@ -131,6 +139,7 @@ final class ExtractedCvProfileMapperTest extends TestCase
         $this->mapper->toCandidateProfile(
             $this->validPayload(['skills' => [['label' => 'PHP', 'yearsOfExperience' => 'five']]]),
             new CandidateProfileId('0198a1b2-0000-7000-8000-000000000001'),
+            'owner-1',
             'cv.pdf',
             new \DateTimeImmutable('2026-07-26'),
         );
@@ -143,6 +152,7 @@ final class ExtractedCvProfileMapperTest extends TestCase
         $this->mapper->toCandidateProfile(
             ['seniority' => 'senior'],
             new CandidateProfileId('0198a1b2-0000-7000-8000-000000000001'),
+            'owner-1',
             'cv.pdf',
             new \DateTimeImmutable('2026-07-26'),
         );

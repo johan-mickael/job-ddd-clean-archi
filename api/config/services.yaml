@@ -148,6 +148,9 @@ services:
     CandidateProfile\Application\GetCandidateProfile\GetCandidateProfileHandlerInterface:
         alias: CandidateProfile\Application\GetCandidateProfile\GetCandidateProfileHandler
 
+    CandidateProfile\Application\ListMyCandidateProfiles\ListMyCandidateProfilesHandlerInterface:
+        alias: CandidateProfile\Application\ListMyCandidateProfiles\ListMyCandidateProfilesHandler
+
     Matching\:
         resource: "../src/Matching/"
 

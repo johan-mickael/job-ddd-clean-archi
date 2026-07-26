@@ -24,6 +24,14 @@ final class DoctrineCandidateProfileRepository implements CandidateProfileReposi
         return $entity !== null ? $this->mapper->toDomain($entity) : throw CandidateProfileNotFound::withId($id);
     }
 
+    public function ofOwnerId(string $ownerId): array
+    {
+        $entities = $this->entityManager->getRepository(CandidateProfileEntity::class)
+            ->findBy(['ownerId' => $ownerId], ['extractedAt' => 'DESC']);
+
+        return \array_map($this->mapper->toDomain(...), $entities);
+    }
+
     public function add(CandidateProfile $profile): void
     {
         $this->entityManager->persist($this->mapper->toNewEntity($profile));

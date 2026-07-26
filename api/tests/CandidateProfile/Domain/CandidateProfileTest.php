@@ -40,6 +40,7 @@ final class CandidateProfileTest extends TestCase
 
         CandidateProfile::extractedFrom(
             new CandidateProfileId('0198a1b2-0000-7000-8000-000000000001'),
+            'owner-1',
             '  ',
             new \DateTimeImmutable('2026-07-26'),
             SeniorityLevel::Senior,
@@ -58,6 +59,7 @@ final class CandidateProfileTest extends TestCase
     {
         return CandidateProfile::extractedFrom(
             new CandidateProfileId('0198a1b2-0000-7000-8000-000000000001'),
+            'owner-1',
             'cv.pdf',
             new \DateTimeImmutable('2026-07-26'),
             SeniorityLevel::Senior,

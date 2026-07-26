@@ -20,7 +20,7 @@ final class MatchJobsToProfileHandler implements MatchJobsToProfileHandlerInterf
 
     public function __invoke(MatchJobsToProfile $query): MatchedJobs
     {
-        $profile = ($this->getCandidateProfile)(new GetCandidateProfile($query->candidateProfileId));
+        $profile = ($this->getCandidateProfile)(new GetCandidateProfile($query->candidateProfileId, $query->requesterId));
 
         $phrase = new CandidateSearchPhrase(
             $profile->roles,

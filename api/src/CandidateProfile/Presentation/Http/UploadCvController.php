@@ -9,6 +9,7 @@ use CandidateProfile\Application\UploadCv\UploadCvHandlerInterface;
 use CandidateProfile\Domain\Exception\CvProfileExtractionFailed;
 use CandidateProfile\Domain\Exception\CvTextNotExtractable;
 use CandidateProfile\Domain\Exception\InvalidCvProfileData;
+use Shared\Domain\CurrentUserIdProviderInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,7 +17,10 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class UploadCvController
 {
-    public function __construct(private readonly UploadCvHandlerInterface $uploadCv) {}
+    public function __construct(
+        private readonly UploadCvHandlerInterface $uploadCv,
+        private readonly CurrentUserIdProviderInterface $currentUserId,
+    ) {}
 
     #[Route('/api/cv', name: 'upload_cv', methods: ['POST'])]
     public function __invoke(Request $request): JsonResponse
@@ -31,7 +35,7 @@ final class UploadCvController
         \assert(\is_string($content));
 
         try {
-            $id = ($this->uploadCv)(new UploadCv($content, $file->getClientOriginalName()));
+            $id = ($this->uploadCv)(new UploadCv($content, $file->getClientOriginalName(), $this->currentUserId->id()));
         } catch (CvTextNotExtractable $e) {
             return new JsonResponse(['error' => $e->getMessage()], 422);
         } catch (InvalidCvProfileData $e) {

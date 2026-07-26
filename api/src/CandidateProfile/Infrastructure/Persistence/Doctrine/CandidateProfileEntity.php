@@ -8,11 +8,15 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'candidate_profile')]
+#[ORM\Index(name: 'candidate_profile_owner_id_idx', columns: ['owner_id'])]
 final class CandidateProfileEntity
 {
     #[ORM\Id]
     #[ORM\Column(type: 'string', length: 36)]
     public string $id;
+
+    #[ORM\Column(type: 'string', length: 36)]
+    public string $ownerId;
 
     #[ORM\Column(type: 'string', length: 255)]
     public string $sourceFileName;

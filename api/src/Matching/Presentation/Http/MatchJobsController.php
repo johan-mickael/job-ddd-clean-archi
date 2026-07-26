@@ -8,6 +8,7 @@ use Matching\Application\MatchJobsToProfile\MatchedJobs;
 use Matching\Application\MatchJobsToProfile\MatchedJobView;
 use Matching\Application\MatchJobsToProfile\MatchJobsToProfile;
 use Matching\Application\MatchJobsToProfile\MatchJobsToProfileHandlerInterface;
+use Shared\Domain\CurrentUserIdProviderInterface;
 use Shared\Domain\DomainException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,7 +18,10 @@ final class MatchJobsController
 {
     private const int MAX_PAGE_SIZE = 50;
 
-    public function __construct(private readonly MatchJobsToProfileHandlerInterface $matchJobsToProfile) {}
+    public function __construct(
+        private readonly MatchJobsToProfileHandlerInterface $matchJobsToProfile,
+        private readonly CurrentUserIdProviderInterface $currentUserId,
+    ) {}
 
     #[Route('/api/cv/{candidateProfileId}/matches', name: 'candidate_profile_matches', methods: ['GET'])]
     public function __invoke(string $candidateProfileId, Request $request): JsonResponse
@@ -25,6 +29,7 @@ final class MatchJobsController
         try {
             $matches = ($this->matchJobsToProfile)(new MatchJobsToProfile(
                 candidateProfileId: $candidateProfileId,
+                requesterId: $this->currentUserId->id(),
                 page: \max(1, $request->query->getInt('page', 1)),
                 pageSize: \min(self::MAX_PAGE_SIZE, \max(1, $request->query->getInt('pageSize', 20))),
             ));

@@ -9,5 +9,6 @@ final readonly class UploadCv
     public function __construct(
         public string $fileContent,
         public string $fileName,
+        public string $ownerId,
     ) {}
 }

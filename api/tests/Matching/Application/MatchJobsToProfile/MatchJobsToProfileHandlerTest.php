@@ -23,7 +23,7 @@ final class MatchJobsToProfileHandlerTest extends TestCase
         $searchJobs = new FakeSearchJobsHandler(new SearchResults([], 1, 20, 0));
         $handler = new MatchJobsToProfileHandler(new FakeGetCandidateProfileHandler($profile), $searchJobs);
 
-        $handler(new MatchJobsToProfile('0198a1b2-0000-7000-8000-000000000001'));
+        $handler(new MatchJobsToProfile('0198a1b2-0000-7000-8000-000000000001', 'owner-1'));
 
         self::assertSame('Backend Developer. Skills: PHP, Symfony', $searchJobs->lastQuery?->freeText);
     }
@@ -42,7 +42,7 @@ final class MatchJobsToProfileHandlerTest extends TestCase
         $searchJobs = new FakeSearchJobsHandler(new SearchResults([$item], 1, 20, 1));
         $handler = new MatchJobsToProfileHandler(new FakeGetCandidateProfileHandler($this->aProfileView()), $searchJobs);
 
-        $matches = $handler(new MatchJobsToProfile('0198a1b2-0000-7000-8000-000000000001'));
+        $matches = $handler(new MatchJobsToProfile('0198a1b2-0000-7000-8000-000000000001', 'owner-1'));
 
         self::assertCount(1, $matches->items);
         self::assertSame('168NPMR', $matches->items[0]->jobId);
@@ -58,7 +58,7 @@ final class MatchJobsToProfileHandlerTest extends TestCase
 
         $this->expectException(CandidateProfileNotFound::class);
 
-        $handler(new MatchJobsToProfile('0198a1b2-0000-7000-8000-000000000099'));
+        $handler(new MatchJobsToProfile('0198a1b2-0000-7000-8000-000000000099', 'owner-1'));
     }
 
     private function aProfileView(): CandidateProfileView
