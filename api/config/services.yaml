@@ -154,6 +154,24 @@ services:
     Matching\Application\MatchJobsToProfile\MatchJobsToProfileHandlerInterface:
         alias: Matching\Application\MatchJobsToProfile\MatchJobsToProfileHandler
 
+    Identity\:
+        resource: "../src/Identity/"
+
+    Identity\Domain\UserRepositoryInterface:
+        alias: Identity\Infrastructure\Persistence\Doctrine\DoctrineUserRepository
+
+    Identity\Domain\PasswordHasherInterface:
+        alias: Identity\Infrastructure\Security\SymfonyPasswordHasher
+
+    Identity\Domain\UserIdGeneratorInterface:
+        alias: Identity\Infrastructure\Uid\SymfonyUserIdGenerator
+
+    Identity\Application\RegisterUser\RegisterUserHandlerInterface:
+        alias: Identity\Application\RegisterUser\RegisterUserHandler
+
+    Shared\Domain\CurrentUserIdProviderInterface:
+        alias: Identity\Infrastructure\Security\SymfonyCurrentUserIdProvider
+
     Shared\:
         resource: "../src/Shared/"
 

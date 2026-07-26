@@ -13,6 +13,7 @@
         "doctrine/doctrine-migrations-bundle": "^4.0",
         "doctrine/orm": "^3.6",
         "elasticsearch/elasticsearch": "^8.19",
+        "lexik/jwt-authentication-bundle": "^3.2",
         "nyholm/psr7": "^1.8",
         "phpoffice/phpword": "^1.1",
         "smalot/pdfparser": "^2.12",
@@ -27,6 +28,7 @@
         "symfony/psr-http-message-bridge": "8.1.*",
         "symfony/runtime": "8.1.*",
         "symfony/scheduler": "8.1.*",
+        "symfony/security-bundle": "8.1.*",
         "symfony/uid": "8.1.*",
         "symfony/yaml": "8.1.*"
     },
@@ -46,6 +48,7 @@
             "Search\\": "src/Search/",
             "CandidateProfile\\": "src/CandidateProfile/",
             "Matching\\": "src/Matching/",
+            "Identity\\": "src/Identity/",
             "Shared\\": "src/Shared/",
             "App\\": "src/App/"
         }
