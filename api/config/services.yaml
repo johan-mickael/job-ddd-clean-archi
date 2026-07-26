@@ -108,8 +108,12 @@ services:
     Search\Domain\JobSearchIndexInterface:
         alias: Search\Infrastructure\Elasticsearch\ElasticsearchJobSearchIndex
 
+    Search\Infrastructure\Cache\CachingEmbeddingProvider:
+        arguments:
+            $inner: "@Search\\Infrastructure\\Gemini\\GeminiEmbeddingProvider"
+
     Search\Domain\EmbeddingProviderInterface:
-        alias: Search\Infrastructure\Gemini\GeminiEmbeddingProvider
+        alias: Search\Infrastructure\Cache\CachingEmbeddingProvider
 
     CandidateProfile\:
         resource: "../src/CandidateProfile/"
