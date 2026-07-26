@@ -74,5 +74,8 @@
             "require": "8.1.*",
             "docker": true
         }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^12"
     }
 }
