@@ -6,16 +6,23 @@ namespace Ingestion\Infrastructure\FranceTravail;
 
 use Ingestion\Domain\Exception\JobOfferPayloadInvalid;
 use Ingestion\Domain\IncomingJobOffer;
+use Ingestion\Domain\IncomingJobSkill;
 
 // Anti-corruption layer: FT's raw offer JSON never reaches past this point.
-// contact.nom/telephone/courriel are deliberately never read — IncomingJobOffer
-// has no field that could carry them onward (license §7.3).
+// contact.* and agence.* are deliberately never read — IncomingJobOffer has
+// no field that could carry them onward (license §7.3).
 final class JobOfferPayloadTranslator
 {
     private const array CONTRACT_TYPE_CODES = [
         'CDI' => 'cdi',
         'CDD' => 'cdd',
         'MIS' => 'interim',
+    ];
+
+    private const array EXPERIENCE_REQUIREMENT_CODES = [
+        'D' => 'beginner_accepted',
+        'S' => 'desired',
+        'E' => 'required',
     ];
 
     /**
@@ -31,6 +38,19 @@ final class JobOfferPayloadTranslator
             contractType: $this->contractType($rawOffer),
             applyUrl: $this->applyUrl($rawOffer),
             publishedAt: new \DateTimeImmutable($this->requireString($rawOffer, 'dateCreation')),
+            companyLogoUrl: $this->optionalString($rawOffer, 'entreprise', 'logo'),
+            companyDescription: $this->optionalString($rawOffer, 'entreprise', 'description'),
+            locationLabel: $this->optionalString($rawOffer, 'lieuTravail', 'libelle'),
+            locationInseeCode: $this->optionalString($rawOffer, 'lieuTravail', 'commune'),
+            locationPostalCode: $this->optionalString($rawOffer, 'lieuTravail', 'codepostal'),
+            romeCode: $this->nullableString($rawOffer['romeCode'] ?? null),
+            romeLabel: $this->nullableString($rawOffer['romeLibelle'] ?? null),
+            experienceRequirement: $this->experienceRequirement($rawOffer),
+            isWorkStudy: ($rawOffer['alternance'] ?? false) === true,
+            salaryDescription: $this->optionalString($rawOffer, 'salaire', 'libelle'),
+            numberOfPositions: \is_int($rawOffer['nombrePostes'] ?? null) ? $rawOffer['nombrePostes'] : null,
+            skills: $this->skills($rawOffer),
+            updatedAt: $this->nullableDate($rawOffer['dateActualisation'] ?? null),
         );
     }
 
@@ -39,10 +59,9 @@ final class JobOfferPayloadTranslator
      */
     private function companyName(array $rawOffer): string
     {
-        $entreprise = $rawOffer['entreprise'] ?? [];
-        $name = \is_array($entreprise) ? ($entreprise['nom'] ?? null) : null;
+        $name = $this->optionalString($rawOffer, 'entreprise', 'nom');
 
-        return \is_string($name) && $name !== '' ? $name : 'Entreprise non communiquée';
+        return $name ?? 'Entreprise non communiquée';
     }
 
     /**
@@ -60,14 +79,67 @@ final class JobOfferPayloadTranslator
      */
     private function applyUrl(array $rawOffer): string
     {
-        $origin = $rawOffer['origineOffre'] ?? [];
-        $url = \is_array($origin) ? ($origin['urlOrigine'] ?? null) : null;
+        $url = $this->optionalString($rawOffer, 'origineOffre', 'urlOrigine');
 
-        if (!\is_string($url) || $url === '') {
-            throw JobOfferPayloadInvalid::missingField('origineOffre.urlOrigine');
+        return $url ?? throw JobOfferPayloadInvalid::missingField('origineOffre.urlOrigine');
+    }
+
+    /**
+     * @param array<string, mixed> $rawOffer
+     */
+    private function experienceRequirement(array $rawOffer): ?string
+    {
+        $code = $rawOffer['experienceExige'] ?? null;
+
+        return \is_string($code) ? self::EXPERIENCE_REQUIREMENT_CODES[$code] ?? null : null;
+    }
+
+    /**
+     * @param array<string, mixed> $rawOffer
+     * @return list<IncomingJobSkill>
+     */
+    private function skills(array $rawOffer): array
+    {
+        $rawSkills = $rawOffer['competences'] ?? [];
+        if (!\is_array($rawSkills)) {
+            return [];
         }
 
-        return $url;
+        $skills = [];
+        foreach ($rawSkills as $rawSkill) {
+            $label = \is_array($rawSkill) ? ($rawSkill['libelle'] ?? null) : null;
+            if (!\is_string($label) || $label === '') {
+                continue;
+            }
+
+            $skills[] = new IncomingJobSkill(
+                label: $label,
+                romeCompetencyCode: \is_string($rawSkill['code'] ?? null) ? $rawSkill['code'] : null,
+                isRequired: ($rawSkill['exigence'] ?? null) === 'E',
+            );
+        }
+
+        return $skills;
+    }
+
+    /**
+     * @param array<string, mixed> $rawOffer
+     */
+    private function optionalString(array $rawOffer, string $parentField, string $field): ?string
+    {
+        $parent = $rawOffer[$parentField] ?? [];
+
+        return $this->nullableString(\is_array($parent) ? ($parent[$field] ?? null) : null);
+    }
+
+    private function nullableString(mixed $value): ?string
+    {
+        return \is_string($value) && $value !== '' ? $value : null;
+    }
+
+    private function nullableDate(mixed $value): ?\DateTimeImmutable
+    {
+        return \is_string($value) && $value !== '' ? new \DateTimeImmutable($value) : null;
     }
 
     /**
