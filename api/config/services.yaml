@@ -10,6 +10,7 @@ parameters:
     ingestion.france_travail.token_url: '%env(FT_TOKEN_URL)%'
     ingestion.france_travail.client_id: '%env(FT_CLIENT_ID)%'
     ingestion.france_travail.client_secret: '%env(FT_CLIENT_SECRET)%'
+    ingestion.france_travail.api_base_url: '%env(FT_API_BASE_URL)%'
 
 services:
     # default configuration for services in *this* file
@@ -31,6 +32,13 @@ services:
 
     Ingestion\Infrastructure\FranceTravail\AccessTokenProvider:
         alias: Ingestion\Infrastructure\FranceTravail\OAuth2AccessTokenProvider
+
+    Ingestion\Infrastructure\FranceTravail\FranceTravailJobOfferSource:
+        arguments:
+            $apiBaseUrl: '%ingestion.france_travail.api_base_url%'
+
+    Ingestion\Domain\JobOfferSource:
+        alias: Ingestion\Infrastructure\FranceTravail\FranceTravailJobOfferSource
 
     Catalog\:
         resource: '../src/Catalog/'
