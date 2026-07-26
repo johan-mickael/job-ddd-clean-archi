@@ -7,6 +7,7 @@ namespace Tests\Ingestion\Infrastructure\FranceTravail;
 use Ingestion\Domain\Exception\JobOfferSourceUnavailable;
 use Ingestion\Infrastructure\FranceTravail\FranceTravailJobOfferSource;
 use Ingestion\Infrastructure\FranceTravail\JobOfferPayloadTranslator;
+use Ingestion\Infrastructure\FranceTravail\SearchCriteria;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
@@ -62,6 +63,25 @@ final class FranceTravailJobOfferSourceTest extends TestCase
         self::assertSame('2026-07-01T00:00:00Z', $sentOptions['query']['minCreationDate']);
     }
 
+    public function testItScopesTheSearchToTheConfiguredCriteria(): void
+    {
+        $sentOptions = null;
+        $httpClient = new MockHttpClient(function (string $method, string $url, array $options) use (&$sentOptions): MockResponse {
+            $sentOptions = $options;
+
+            return new MockResponse(\json_encode(['resultats' => []]), ['response_headers' => ['Content-Range' => 'offres 0-0/0']]);
+        });
+        $criteria = new SearchCriteria(keywords: 'développeur php', romeCodes: ['M1805'], commune: '69383', distanceKm: 20);
+
+        \iterator_to_array($this->source($httpClient, $criteria)->offersPublishedSince(new \DateTimeImmutable('-1 day')));
+
+        self::assertNotNull($sentOptions);
+        self::assertSame('développeur php', $sentOptions['query']['motsCles']);
+        self::assertSame('M1805', $sentOptions['query']['codeROME']);
+        self::assertSame('69383', $sentOptions['query']['commune']);
+        self::assertSame('20', $sentOptions['query']['distance']);
+    }
+
     public function testItWrapsHttpFailuresAsJobOfferSourceUnavailable(): void
     {
         $httpClient = new MockHttpClient([
@@ -73,13 +93,14 @@ final class FranceTravailJobOfferSourceTest extends TestCase
         \iterator_to_array($this->source($httpClient)->offersPublishedSince(new \DateTimeImmutable('-1 day')));
     }
 
-    private function source(MockHttpClient $httpClient): FranceTravailJobOfferSource
+    private function source(MockHttpClient $httpClient, ?SearchCriteria $criteria = null): FranceTravailJobOfferSource
     {
         return new FranceTravailJobOfferSource(
             $httpClient,
             new FixedAccessTokenProvider(),
             new JobOfferPayloadTranslator(),
             'https://api.francetravail.io/partenaire/offresdemploi/v2',
+            $criteria ?? new SearchCriteria(),
         );
     }
 

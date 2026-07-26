@@ -11,6 +11,10 @@ parameters:
     ingestion.france_travail.client_id: '%env(FT_CLIENT_ID)%'
     ingestion.france_travail.client_secret: '%env(FT_CLIENT_SECRET)%'
     ingestion.france_travail.api_base_url: '%env(FT_API_BASE_URL)%'
+    ingestion.france_travail.search.keywords: '%env(FT_SEARCH_KEYWORDS)%'
+    ingestion.france_travail.search.rome_codes: '%env(csv:FT_SEARCH_ROME_CODES)%'
+    ingestion.france_travail.search.commune: '%env(FT_SEARCH_COMMUNE)%'
+    ingestion.france_travail.search.distance_km: '%env(int:FT_SEARCH_DISTANCE_KM)%'
 
 services:
     # default configuration for services in *this* file
@@ -32,6 +36,13 @@ services:
 
     Ingestion\Infrastructure\FranceTravail\AccessTokenProvider:
         alias: Ingestion\Infrastructure\FranceTravail\OAuth2AccessTokenProvider
+
+    Ingestion\Infrastructure\FranceTravail\SearchCriteria:
+        arguments:
+            $keywords: '%ingestion.france_travail.search.keywords%'
+            $romeCodes: '%ingestion.france_travail.search.rome_codes%'
+            $commune: '%ingestion.france_travail.search.commune%'
+            $distanceKm: '%ingestion.france_travail.search.distance_km%'
 
     Ingestion\Infrastructure\FranceTravail\FranceTravailJobOfferSource:
         arguments:

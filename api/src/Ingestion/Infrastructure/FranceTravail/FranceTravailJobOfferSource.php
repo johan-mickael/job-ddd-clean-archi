@@ -21,6 +21,7 @@ final class FranceTravailJobOfferSource implements JobOfferSource
         private readonly AccessTokenProvider $tokenProvider,
         private readonly JobOfferPayloadTranslator $translator,
         private readonly string $apiBaseUrl,
+        private readonly SearchCriteria $criteria,
     ) {
     }
 
@@ -51,6 +52,7 @@ final class FranceTravailJobOfferSource implements JobOfferSource
                     'Authorization' => 'Bearer '.$this->tokenProvider->provideToken()->value,
                 ],
                 'query' => [
+                    ...$this->criteria->toQueryParams(),
                     'range' => \sprintf('%d-%d', $firstIndex, $firstIndex + self::PAGE_SIZE - 1),
                     'minCreationDate' => $since->format('Y-m-d\TH:i:s\Z'),
                     'maxCreationDate' => $until->format('Y-m-d\TH:i:s\Z'),
