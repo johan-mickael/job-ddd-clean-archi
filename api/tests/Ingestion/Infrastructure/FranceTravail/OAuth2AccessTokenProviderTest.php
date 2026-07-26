@@ -57,6 +57,20 @@ final class OAuth2AccessTokenProviderTest extends TestCase
         $provider->provideToken();
     }
 
+    public function testItSendsTheClientIdEchoedBackInsideTheScope(): void
+    {
+        $sentBody = null;
+        $httpClient = new MockHttpClient(function (string $method, string $url, array $options) use (&$sentBody): MockResponse {
+            $sentBody = $options['body'];
+
+            return new MockResponse(\json_encode(['access_token' => 'abc123', 'expires_in' => 1500]));
+        });
+
+        $this->provider($httpClient)->provideToken();
+
+        self::assertStringContainsString('scope=api_offresdemploiv2+o2dsoffre+application_test-client-id', $sentBody);
+    }
+
     private function provider(MockHttpClient $httpClient): OAuth2AccessTokenProvider
     {
         return new OAuth2AccessTokenProvider(
@@ -65,7 +79,6 @@ final class OAuth2AccessTokenProviderTest extends TestCase
             'https://entreprise.francetravail.fr/connexion/oauth2/access_token',
             'test-client-id',
             'test-client-secret',
-            'api_offresdemploiv2 o2dsoffre',
         );
     }
 }

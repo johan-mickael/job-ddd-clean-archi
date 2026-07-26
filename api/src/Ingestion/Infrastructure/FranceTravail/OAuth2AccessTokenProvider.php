@@ -15,13 +15,16 @@ final class OAuth2AccessTokenProvider implements AccessTokenProvider
     private const string CACHE_KEY = 'ingestion.france_travail.access_token';
     private const int EXPIRY_SAFETY_MARGIN_SECONDS = 60;
 
+    // France Travail requires the client's own id echoed back inside the
+    // scope string (`application_{client_id}`) - it's not a free parameter.
+    private const string SCOPE_TEMPLATE = 'api_offresdemploiv2 o2dsoffre application_%s';
+
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly CacheInterface $cache,
         private readonly string $tokenUrl,
         private readonly string $clientId,
         private readonly string $clientSecret,
-        private readonly string $scope,
     ) {
     }
 
@@ -44,7 +47,7 @@ final class OAuth2AccessTokenProvider implements AccessTokenProvider
                     'grant_type' => 'client_credentials',
                     'client_id' => $this->clientId,
                     'client_secret' => $this->clientSecret,
-                    'scope' => $this->scope,
+                    'scope' => \sprintf(self::SCOPE_TEMPLATE, $this->clientId),
                 ],
             ]);
             $payload = $response->toArray();
