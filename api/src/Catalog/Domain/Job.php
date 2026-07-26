@@ -18,6 +18,7 @@ final class Job
         public readonly ContractType $contractType,
         public readonly ApplyUrl $applyUrl,
         public readonly \DateTimeImmutable $publishedAt,
+        public readonly JobDetails $details,
     ) {
         $this->status = OfferStatus::Published;
     }
@@ -30,8 +31,9 @@ final class Job
         ContractType $contractType,
         ApplyUrl $applyUrl,
         \DateTimeImmutable $publishedAt,
+        JobDetails $details = new JobDetails(),
     ): self {
-        return new self($id, $title, $description, $companyName, $contractType, $applyUrl, $publishedAt);
+        return new self($id, $title, $description, $companyName, $contractType, $applyUrl, $publishedAt, $details);
     }
 
     public function expire(): void
