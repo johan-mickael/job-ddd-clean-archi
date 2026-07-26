@@ -15,6 +15,11 @@ parameters:
     ingestion.france_travail.search.rome_codes: '%env(csv:FT_SEARCH_ROME_CODES)%'
     ingestion.france_travail.search.commune: '%env(FT_SEARCH_COMMUNE)%'
     ingestion.france_travail.search.distance_km: '%env(int:FT_SEARCH_DISTANCE_KM)%'
+    search.elasticsearch.dsn: '%env(ELASTICSEARCH_DSN)%'
+    search.elasticsearch.index_name: '%env(SEARCH_INDEX_NAME)%'
+    search.gemini.api_key: '%env(EMBEDDING_API_KEY)%'
+    search.gemini.model: '%env(EMBEDDING_MODEL)%'
+    search.gemini.dimensions: '%env(int:EMBEDDING_DIMENSIONS)%'
 
 services:
     # default configuration for services in *this* file
@@ -74,6 +79,32 @@ services:
 
     Search\:
         resource: '../src/Search/'
+
+    Elastic\Elasticsearch\Client:
+        factory: ['Search\Infrastructure\Elasticsearch\ElasticsearchClientFactory', 'create']
+        arguments:
+            $dsn: '%search.elasticsearch.dsn%'
+
+    Search\Infrastructure\Elasticsearch\ElasticsearchJobSearchIndex:
+        arguments:
+            $indexName: '%search.elasticsearch.index_name%'
+
+    Search\Infrastructure\Elasticsearch\CreateSearchIndexCommand:
+        arguments:
+            $indexName: '%search.elasticsearch.index_name%'
+            $embeddingDimensions: '%search.gemini.dimensions%'
+
+    Search\Infrastructure\Gemini\GeminiEmbeddingProvider:
+        arguments:
+            $apiKey: '%search.gemini.api_key%'
+            $model: '%search.gemini.model%'
+            $dimensions: '%search.gemini.dimensions%'
+
+    Search\Domain\JobSearchIndexInterface:
+        alias: Search\Infrastructure\Elasticsearch\ElasticsearchJobSearchIndex
+
+    Search\Domain\EmbeddingProviderInterface:
+        alias: Search\Infrastructure\Gemini\GeminiEmbeddingProvider
 
     CandidateProfile\:
         resource: '../src/CandidateProfile/'
