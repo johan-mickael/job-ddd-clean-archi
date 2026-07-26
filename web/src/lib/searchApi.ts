@@ -4,17 +4,24 @@ export interface SearchResultItem {
   companyName: string
   locationLabel: string | null
   applyUrl: string
+  publishedAt: string
   score: number
 }
 
-interface SearchResponse {
+export interface SearchResponse {
   results: SearchResultItem[]
+  page: number
+  pageSize: number
+  total: number
+  totalPages: number
 }
 
 export interface SearchParams {
   freeText: string
   contractType?: string | null
   romeCode?: string | null
+  page?: number
+  pageSize?: number
 }
 
 export class SearchUnavailableError extends Error {
@@ -28,10 +35,12 @@ export class SearchUnavailableError extends Error {
 export async function searchJobs(
   params: SearchParams,
   signal?: AbortSignal,
-): Promise<SearchResultItem[]> {
+): Promise<SearchResponse> {
   const query = new URLSearchParams({ q: params.freeText })
   if (params.contractType) query.set('contractType', params.contractType)
   if (params.romeCode) query.set('romeCode', params.romeCode)
+  if (params.page) query.set('page', String(params.page))
+  if (params.pageSize) query.set('pageSize', String(params.pageSize))
 
   let response: Response
   try {
@@ -45,6 +54,5 @@ export async function searchJobs(
     throw new SearchUnavailableError(`HTTP ${response.status}`)
   }
 
-  const body = (await response.json()) as SearchResponse
-  return body.results
+  return (await response.json()) as SearchResponse
 }
