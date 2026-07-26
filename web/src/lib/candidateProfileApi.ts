@@ -1,3 +1,5 @@
+import { apiFetch } from '@/lib/apiFetch'
+
 export interface CandidateProfileLanguage {
   name: string
   proficiency: string
@@ -37,7 +39,7 @@ export class CandidateProfileNotFoundError extends Error {
 export async function fetchCandidateProfile(candidateProfileId: string): Promise<CandidateProfile> {
   let response: Response
   try {
-    response = await fetch(`/api/cv/${encodeURIComponent(candidateProfileId)}`)
+    response = await apiFetch(`/api/cv/${encodeURIComponent(candidateProfileId)}`)
   } catch (error) {
     throw new CandidateProfileUnavailableError(error)
   }

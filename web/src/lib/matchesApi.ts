@@ -1,3 +1,4 @@
+import { apiFetch } from '@/lib/apiFetch'
 import type { SearchResponse } from './searchApi'
 
 export class MatchesUnavailableError extends Error {
@@ -24,7 +25,7 @@ export async function fetchMatches(
 
   let response: Response
   try {
-    response = await fetch(`/api/cv/${encodeURIComponent(candidateProfileId)}/matches?${query.toString()}`)
+    response = await apiFetch(`/api/cv/${encodeURIComponent(candidateProfileId)}/matches?${query.toString()}`)
   } catch (error) {
     throw new MatchesUnavailableError(error)
   }

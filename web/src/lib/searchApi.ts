@@ -1,3 +1,5 @@
+import { apiFetch } from '@/lib/apiFetch'
+
 export interface SearchResultItem {
   jobId: string
   title: string
@@ -44,7 +46,7 @@ export async function searchJobs(
 
   let response: Response
   try {
-    response = await fetch(`/api/search?${query.toString()}`, { signal })
+    response = await apiFetch(`/api/search?${query.toString()}`, { signal })
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') throw error
     throw new SearchUnavailableError(error)

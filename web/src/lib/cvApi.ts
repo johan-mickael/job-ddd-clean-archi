@@ -1,3 +1,5 @@
+import { apiFetch } from '@/lib/apiFetch'
+
 export class CvUploadError extends Error {
   constructor(message: string) {
     super(message)
@@ -11,7 +13,7 @@ export async function uploadCv(file: File): Promise<string> {
 
   let response: Response
   try {
-    response = await fetch('/api/cv', { method: 'POST', body })
+    response = await apiFetch('/api/cv', { method: 'POST', body })
   } catch {
     throw new CvUploadError('The CV upload service could not be reached.')
   }

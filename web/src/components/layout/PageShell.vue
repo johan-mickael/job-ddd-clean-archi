@@ -1,5 +1,15 @@
 <script setup lang="ts">
+import { useRouter } from 'vue-router'
+import { clearToken, currentUserEmail, isAuthenticated } from '@/lib/authStore'
+
 withDefaults(defineProps<{ wide?: boolean }>(), { wide: false })
+
+const router = useRouter()
+
+async function logout() {
+  clearToken()
+  await router.push({ name: 'login' })
+}
 </script>
 
 <template>
@@ -22,13 +32,39 @@ withDefaults(defineProps<{ wide?: boolean }>(), { wide: false })
           </span>
         </RouterLink>
 
-        <RouterLink
-          :to="{ name: 'upload-cv' }"
-          class="flex items-center gap-1.5 rounded-full border border-white/10 px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-signal/40 hover:text-foreground print:hidden"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5"><path d="M14 2v6h6" /><path d="M4 22V4a2 2 0 0 1 2-2h9l5 5v15a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z" /></svg>
-          Match my CV
-        </RouterLink>
+        <div class="flex items-center gap-2 print:hidden">
+          <template v-if="isAuthenticated">
+            <RouterLink
+              :to="{ name: 'my-cvs' }"
+              class="flex items-center gap-1.5 rounded-full border border-white/10 px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-signal/40 hover:text-foreground"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5"><path d="M14 2v6h6" /><path d="M4 22V4a2 2 0 0 1 2-2h9l5 5v15a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z" /></svg>
+              My CVs
+            </RouterLink>
+            <RouterLink
+              :to="{ name: 'upload-cv' }"
+              class="flex items-center gap-1.5 rounded-full border border-white/10 px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-signal/40 hover:text-foreground"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
+              Match my CV
+            </RouterLink>
+            <button
+              type="button"
+              class="flex items-center gap-1 pl-1 text-xs text-muted-foreground/60 transition-colors hover:text-foreground"
+              :title="currentUserEmail ?? undefined"
+              @click="logout"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><path d="M16 17l5-5-5-5" /><path d="M21 12H9" /></svg>
+            </button>
+          </template>
+          <RouterLink
+            v-else
+            :to="{ name: 'login' }"
+            class="flex items-center gap-1.5 rounded-full border border-white/10 px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-signal/40 hover:text-foreground"
+          >
+            Sign in
+          </RouterLink>
+        </div>
       </div>
 
       <div class="flex-1">
