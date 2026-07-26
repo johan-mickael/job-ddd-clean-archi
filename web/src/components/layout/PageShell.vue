@@ -5,7 +5,7 @@ withDefaults(defineProps<{ wide?: boolean }>(), { wide: false })
 <template>
   <div class="min-h-svh bg-background">
     <div
-      class="pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,rgb(139_127_255_/_0.15),transparent)]"
+      class="pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,rgb(139_127_255_/_0.15),transparent)] print:hidden"
     />
 
     <main
@@ -24,7 +24,7 @@ withDefaults(defineProps<{ wide?: boolean }>(), { wide: false })
 
         <RouterLink
           :to="{ name: 'upload-cv' }"
-          class="flex items-center gap-1.5 rounded-full border border-white/10 px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-signal/40 hover:text-foreground"
+          class="flex items-center gap-1.5 rounded-full border border-white/10 px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-signal/40 hover:text-foreground print:hidden"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5"><path d="M14 2v6h6" /><path d="M4 22V4a2 2 0 0 1 2-2h9l5 5v15a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z" /></svg>
           Match my CV
@@ -35,7 +35,7 @@ withDefaults(defineProps<{ wide?: boolean }>(), { wide: false })
         <slot />
       </div>
 
-      <footer class="mt-16 flex items-center justify-between font-mono text-[0.6875rem] text-muted-foreground/40">
+      <footer class="mt-16 flex items-center justify-between font-mono text-[0.6875rem] text-muted-foreground/40 print:hidden">
         <span>Listings via France Travail &middot; always apply on their site</span>
       </footer>
     </main>

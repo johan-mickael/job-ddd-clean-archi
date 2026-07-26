@@ -103,3 +103,25 @@
         @apply font-sans;
     }
 }
+
+/*
+ * The dark theme is a deliberate on-screen identity, not something worth
+ * defending on paper - printing it wastes ink and prints badly. Print gets
+ * its own light palette; everything else (spacing, type, layout) is unchanged.
+ */
+@media print {
+    :root {
+        --background: #ffffff;
+        --foreground: #0a0e1a;
+        --card: #ffffff;
+        --card-foreground: #0a0e1a;
+        --muted-foreground: #52525b;
+        --secondary: #f4f4f5;
+        --secondary-foreground: #0a0e1a;
+        --accent: #f4f4f5;
+        --accent-foreground: #0a0e1a;
+        --border: rgb(0 0 0 / 12%);
+        --signal: #6d28d9;
+        --signal-foreground: #ffffff;
+    }
+}

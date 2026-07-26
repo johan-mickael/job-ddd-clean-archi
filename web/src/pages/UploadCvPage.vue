@@ -49,7 +49,7 @@ async function submit() {
 
   try {
     const candidateProfileId = await uploadCv(selectedFile.value)
-    await router.push({ name: 'cv-matches', params: { candidateProfileId } })
+    await router.push({ name: 'cv-profile', params: { candidateProfileId } })
   } catch (error) {
     status.value = 'error'
     errorMessage.value = error instanceof CvUploadError ? error.message : 'Something unexpected went wrong.'
