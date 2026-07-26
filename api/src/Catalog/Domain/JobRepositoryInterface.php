@@ -14,4 +14,9 @@ interface JobRepositoryInterface
     public function ofId(JobId $id): Job;
 
     public function add(Job $job): void;
+
+    /**
+     * @return list<JobId>
+     */
+    public function publishedJobIds(): array;
 }

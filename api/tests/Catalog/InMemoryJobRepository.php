@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Catalog\Application\PublishJob;
+namespace Tests\Catalog;
 
 use Catalog\Domain\Exception\JobNotFound;
 use Catalog\Domain\Job;
@@ -22,5 +22,13 @@ final class InMemoryJobRepository implements JobRepositoryInterface
     public function add(Job $job): void
     {
         $this->jobs[$job->id->value] = $job;
+    }
+
+    public function publishedJobIds(): array
+    {
+        return \array_values(\array_map(
+            static fn (Job $job): JobId => $job->id,
+            \array_filter($this->jobs, static fn (Job $job): bool => !$job->isExpired()),
+        ));
     }
 }

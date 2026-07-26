@@ -19,8 +19,9 @@ final class Job
         public readonly ApplyUrl $applyUrl,
         public readonly \DateTimeImmutable $publishedAt,
         public readonly JobDetails $details,
+        OfferStatus $status,
     ) {
-        $this->status = OfferStatus::Published;
+        $this->status = $status;
     }
 
     public static function publish(
@@ -33,7 +34,24 @@ final class Job
         \DateTimeImmutable $publishedAt,
         JobDetails $details = new JobDetails(),
     ): self {
-        return new self($id, $title, $description, $companyName, $contractType, $applyUrl, $publishedAt, $details);
+        return new self($id, $title, $description, $companyName, $contractType, $applyUrl, $publishedAt, $details, OfferStatus::Published);
+    }
+
+    /**
+     * Rehydrates a Job from storage. Not a business event - use publish() for that.
+     */
+    public static function reconstitute(
+        JobId $id,
+        string $title,
+        string $description,
+        string $companyName,
+        ContractType $contractType,
+        ApplyUrl $applyUrl,
+        \DateTimeImmutable $publishedAt,
+        JobDetails $details,
+        OfferStatus $status,
+    ): self {
+        return new self($id, $title, $description, $companyName, $contractType, $applyUrl, $publishedAt, $details, $status);
     }
 
     public function expire(): void

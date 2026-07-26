@@ -43,6 +43,9 @@ services:
     Catalog\:
         resource: '../src/Catalog/'
 
+    Catalog\Domain\JobRepositoryInterface:
+        alias: Catalog\Infrastructure\Persistence\Doctrine\DoctrineJobRepository
+
     Search\:
         resource: '../src/Search/'
 

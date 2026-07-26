@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Tests\Catalog\Application\PublishJob;
 
-use Catalog\Domain\Exception\InvalidContractType;
-use Catalog\Domain\ExperienceRequirement;
-use Catalog\Domain\JobId;
 use Catalog\Application\PublishJob\PublishJob;
 use Catalog\Application\PublishJob\PublishJobHandler;
 use Catalog\Application\PublishJob\PublishJobSkill;
+use Catalog\Domain\Exception\InvalidContractType;
+use Catalog\Domain\ExperienceRequirement;
+use Catalog\Domain\JobId;
 use PHPUnit\Framework\TestCase;
+use Tests\Catalog\InMemoryJobRepository;
 
 final class PublishJobHandlerTest extends TestCase
 {
