@@ -2,6 +2,12 @@
 services:
   php:
     restart: unless-stopped
+    # The entrypoint hard-checks DATABASE_URL and waits (then exits 1) if the
+    # database isn't reachable - it can't boot without it, so that dependency
+    # belongs here rather than in every caller's service list.
+    depends_on:
+      database:
+        condition: service_healthy
     environment: &php_environment
       SERVER_NAME: ${SERVER_NAME:-localhost}, php:80
       DEFAULT_URI: https://${SERVER_NAME:-localhost}:${HTTPS_PORT:-443}
@@ -55,8 +61,13 @@ services:
     # and its entrypoint runs `composer install` when vendor/ is empty - on a
     # cold checkout, starting both at once races two installs against the
     # same shared vendor/. Waiting on php's healthcheck serializes them.
+    # messenger:consume also opens the AMQP connection eagerly at startup
+    # (unlike Elasticsearch, which is only touched per-message), so rabbitmq
+    # has to be up first too.
     depends_on:
       php:
+        condition: service_healthy
+      rabbitmq:
         condition: service_healthy
     environment: *php_environment
     command:
