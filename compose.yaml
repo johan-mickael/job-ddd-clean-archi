@@ -51,6 +51,13 @@ services:
   # which is the standard way to bound a worker's memory growth.
   worker:
     restart: unless-stopped
+    # php and worker bind-mount the same ./api dir (see compose.override.yaml)
+    # and its entrypoint runs `composer install` when vendor/ is empty - on a
+    # cold checkout, starting both at once races two installs against the
+    # same shared vendor/. Waiting on php's healthcheck serializes them.
+    depends_on:
+      php:
+        condition: service_healthy
     environment: *php_environment
     command:
       [
@@ -64,10 +71,10 @@ services:
       ]
     healthcheck:
       test: ["CMD", "pidof", "php"]
-      interval: 30s
+      interval: 10s
       timeout: 5s
-      retries: 3
-      start_period: 10s
+      retries: 5
+      start_period: 90s
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.15.3
