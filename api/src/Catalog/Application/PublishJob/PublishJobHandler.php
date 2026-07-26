@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Catalog\Application\PublishJob;
 
+use Catalog\Application\EventPublisherInterface;
 use Catalog\Domain\ApplyUrl;
 use Catalog\Domain\ContractType;
 use Catalog\Domain\Exception\InvalidContractType;
@@ -16,10 +17,14 @@ use Catalog\Domain\JobSkill;
 use Catalog\Domain\WorkLocation;
 use Shared\Domain\RomeCode;
 use Shared\Domain\RomeCompetencyCode;
+use Shared\IntegrationEvent\JobWasChanged;
 
 final class PublishJobHandler implements PublishJobHandlerInterface
 {
-    public function __construct(private readonly JobRepositoryInterface $jobs) {}
+    public function __construct(
+        private readonly JobRepositoryInterface $jobs,
+        private readonly EventPublisherInterface $events,
+    ) {}
 
     public function __invoke(PublishJob $command): void
     {
@@ -35,6 +40,7 @@ final class PublishJobHandler implements PublishJobHandlerInterface
         );
 
         $this->jobs->add($job);
+        $this->events->publish(new JobWasChanged($command->jobId));
     }
 
     private function contractType(string $code): ContractType

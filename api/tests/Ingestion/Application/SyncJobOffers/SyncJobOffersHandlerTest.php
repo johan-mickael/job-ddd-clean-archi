@@ -12,6 +12,7 @@ use Ingestion\Domain\IncomingJobOffer;
 use Ingestion\Domain\IncomingJobSkill;
 use PHPUnit\Framework\TestCase;
 use Tests\Catalog\InMemoryJobRepository;
+use Tests\Catalog\RecordingEventPublisher;
 
 final class SyncJobOffersHandlerTest extends TestCase
 {
@@ -20,7 +21,7 @@ final class SyncJobOffersHandlerTest extends TestCase
         $jobs = new InMemoryJobRepository();
         $handler = new SyncJobOffersHandler(
             new FakeJobOfferSource([$this->incomingOffer('168NPMR'), $this->incomingOffer('168NPMS')]),
-            new PublishJobHandler($jobs),
+            new PublishJobHandler($jobs, new RecordingEventPublisher()),
         );
 
         $seenOfferIds = ($handler)(new SyncJobOffers(new \DateTimeImmutable('-1 day')));
@@ -35,7 +36,7 @@ final class SyncJobOffersHandlerTest extends TestCase
         $jobs = new InMemoryJobRepository();
         $handler = new SyncJobOffersHandler(
             new FakeJobOfferSource([$this->incomingOffer('168NPMR')]),
-            new PublishJobHandler($jobs),
+            new PublishJobHandler($jobs, new RecordingEventPublisher()),
         );
 
         ($handler)(new SyncJobOffers(new \DateTimeImmutable('-1 day')));

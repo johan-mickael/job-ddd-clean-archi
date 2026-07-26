@@ -12,15 +12,16 @@ use Catalog\Domain\Exception\OfferAlreadyExpired;
 use Catalog\Domain\JobId;
 use PHPUnit\Framework\TestCase;
 use Tests\Catalog\InMemoryJobRepository;
+use Tests\Catalog\RecordingEventPublisher;
 
 final class ExpireJobHandlerTest extends TestCase
 {
     public function testItExpiresAPublishedJob(): void
     {
         $jobs = new InMemoryJobRepository();
-        (new PublishJobHandler($jobs))($this->publishCommand());
+        (new PublishJobHandler($jobs, new RecordingEventPublisher()))($this->publishCommand());
 
-        (new ExpireJobHandler($jobs))(new ExpireJob('168NPMR'));
+        (new ExpireJobHandler($jobs, new RecordingEventPublisher()))(new ExpireJob('168NPMR'));
 
         self::assertTrue($jobs->ofId(new JobId('168NPMR'))->isExpired());
     }
@@ -28,8 +29,8 @@ final class ExpireJobHandlerTest extends TestCase
     public function testExpiringAnAlreadyExpiredJobThrows(): void
     {
         $jobs = new InMemoryJobRepository();
-        (new PublishJobHandler($jobs))($this->publishCommand());
-        $handler = new ExpireJobHandler($jobs);
+        (new PublishJobHandler($jobs, new RecordingEventPublisher()))($this->publishCommand());
+        $handler = new ExpireJobHandler($jobs, new RecordingEventPublisher());
         $handler(new ExpireJob('168NPMR'));
 
         $this->expectException(OfferAlreadyExpired::class);

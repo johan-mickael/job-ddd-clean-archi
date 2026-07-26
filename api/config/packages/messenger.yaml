@@ -5,14 +5,17 @@ framework:
 
         transports:
             # https://symfony.com/doc/current/messenger.html#transport-configuration
-            # async: '%env(MESSENGER_TRANSPORT_DSN)%'
             # failed: 'doctrine://default?queue_name=failed'
             sync: 'sync://'
             scheduler_ingestion: 'schedule://ingestion'
+            # Search indexing is a genuinely async concern (embedding is a
+            # slow external API call that must never block Job publishing
+            # or expiry) - a dedicated broker rather than reusing Postgres
+            # as a queue.
+            async: '%env(MESSENGER_TRANSPORT_DSN)%'
 
         routing:
-            # Route your messages to the transports
-            # 'App\Message\YourMessage': async
+            'Shared\IntegrationEvent\JobWasChanged': async
 
 # when@test:
 #    framework:

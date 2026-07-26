@@ -66,6 +66,9 @@ services:
     Catalog\Application\ListPublishedJobIds\ListPublishedJobIdsHandlerInterface:
         alias: Catalog\Application\ListPublishedJobIds\ListPublishedJobIdsHandler
 
+    Catalog\Application\EventPublisherInterface:
+        alias: Catalog\Infrastructure\Messenger\MessengerEventPublisher
+
     Search\:
         resource: '../src/Search/'
 

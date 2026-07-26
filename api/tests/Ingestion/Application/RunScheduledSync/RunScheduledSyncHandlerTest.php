@@ -15,6 +15,7 @@ use Ingestion\Application\SyncJobOffers\SyncJobOffersHandler;
 use Ingestion\Domain\IncomingJobOffer;
 use PHPUnit\Framework\TestCase;
 use Tests\Catalog\InMemoryJobRepository;
+use Tests\Catalog\RecordingEventPublisher;
 use Tests\Ingestion\Application\SyncJobOffers\FakeJobOfferSource;
 
 final class RunScheduledSyncHandlerTest extends TestCase
@@ -22,12 +23,12 @@ final class RunScheduledSyncHandlerTest extends TestCase
     public function testOffersNoLongerReturnedBySourceAreExpiredAfterSync(): void
     {
         $jobs = new InMemoryJobRepository();
-        $publishJob = new PublishJobHandler($jobs);
+        $publishJob = new PublishJobHandler($jobs, new RecordingEventPublisher());
         $publishJob($this->publishCommand('168OLD1'));
 
         $handler = new RunScheduledSyncHandler(
             new SyncJobOffersHandler(new FakeJobOfferSource([$this->incomingOffer('168NPMR')]), $publishJob),
-            new ExpireDelistedOffersHandler(new ListPublishedJobIdsHandler($jobs), new ExpireJobHandler($jobs)),
+            new ExpireDelistedOffersHandler(new ListPublishedJobIdsHandler($jobs), new ExpireJobHandler($jobs, new RecordingEventPublisher())),
         );
 
         ($handler)();

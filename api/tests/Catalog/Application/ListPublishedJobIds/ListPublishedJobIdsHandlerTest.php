@@ -11,16 +11,17 @@ use Catalog\Application\PublishJob\PublishJob;
 use Catalog\Application\PublishJob\PublishJobHandler;
 use PHPUnit\Framework\TestCase;
 use Tests\Catalog\InMemoryJobRepository;
+use Tests\Catalog\RecordingEventPublisher;
 
 final class ListPublishedJobIdsHandlerTest extends TestCase
 {
     public function testItListsOnlyPublishedJobs(): void
     {
         $jobs = new InMemoryJobRepository();
-        $publishJob = new PublishJobHandler($jobs);
+        $publishJob = new PublishJobHandler($jobs, new RecordingEventPublisher());
         $publishJob($this->publishCommand('168NPMR'));
         $publishJob($this->publishCommand('168NPMS'));
-        (new ExpireJobHandler($jobs))(new ExpireJob('168NPMS'));
+        (new ExpireJobHandler($jobs, new RecordingEventPublisher()))(new ExpireJob('168NPMS'));
 
         $ids = (new ListPublishedJobIdsHandler($jobs))();
 

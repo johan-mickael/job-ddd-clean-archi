@@ -12,13 +12,14 @@ use Catalog\Domain\ExperienceRequirement;
 use Catalog\Domain\JobId;
 use PHPUnit\Framework\TestCase;
 use Tests\Catalog\InMemoryJobRepository;
+use Tests\Catalog\RecordingEventPublisher;
 
 final class PublishJobHandlerTest extends TestCase
 {
     public function testItPublishesAndPersistsTheJob(): void
     {
         $jobs = new InMemoryJobRepository();
-        $handler = new PublishJobHandler($jobs);
+        $handler = new PublishJobHandler($jobs, new RecordingEventPublisher());
 
         ($handler)($this->command());
 
@@ -28,7 +29,7 @@ final class PublishJobHandlerTest extends TestCase
     public function testItBuildsTheDetailsBundleFromAFullyPopulatedCommand(): void
     {
         $jobs = new InMemoryJobRepository();
-        $handler = new PublishJobHandler($jobs);
+        $handler = new PublishJobHandler($jobs, new RecordingEventPublisher());
 
         ($handler)(new PublishJob(
             jobId: '168NPMR',
@@ -74,7 +75,7 @@ final class PublishJobHandlerTest extends TestCase
     public function testUnrecognizedExperienceRequirementIsDroppedRatherThanFailingThePublish(): void
     {
         $jobs = new InMemoryJobRepository();
-        $handler = new PublishJobHandler($jobs);
+        $handler = new PublishJobHandler($jobs, new RecordingEventPublisher());
 
         ($handler)(new PublishJob(
             jobId: '168NPMR',
@@ -93,7 +94,7 @@ final class PublishJobHandlerTest extends TestCase
     public function testDefaultNumberOfPositionsIsOneWhenNotSpecified(): void
     {
         $jobs = new InMemoryJobRepository();
-        $handler = new PublishJobHandler($jobs);
+        $handler = new PublishJobHandler($jobs, new RecordingEventPublisher());
 
         ($handler)($this->command());
 
@@ -102,7 +103,7 @@ final class PublishJobHandlerTest extends TestCase
 
     public function testItRejectsAnUnrecognizedContractType(): void
     {
-        $handler = new PublishJobHandler(new InMemoryJobRepository());
+        $handler = new PublishJobHandler(new InMemoryJobRepository(), new RecordingEventPublisher());
 
         $this->expectException(InvalidContractType::class);
 

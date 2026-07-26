@@ -13,18 +13,19 @@ use Ingestion\Application\ExpireDelistedOffers\ExpireDelistedOffers;
 use Ingestion\Application\ExpireDelistedOffers\ExpireDelistedOffersHandler;
 use PHPUnit\Framework\TestCase;
 use Tests\Catalog\InMemoryJobRepository;
+use Tests\Catalog\RecordingEventPublisher;
 
 final class ExpireDelistedOffersHandlerTest extends TestCase
 {
     public function testOffersMissingFromTheSeenSetAreExpired(): void
     {
         $jobs = new InMemoryJobRepository();
-        $publishJob = new PublishJobHandler($jobs);
+        $publishJob = new PublishJobHandler($jobs, new RecordingEventPublisher());
         $publishJob($this->publishCommand('168NPMR'));
         $publishJob($this->publishCommand('168NPMS'));
         $publishJob($this->publishCommand('168NPMT'));
 
-        $handler = new ExpireDelistedOffersHandler(new ListPublishedJobIdsHandler($jobs), new ExpireJobHandler($jobs));
+        $handler = new ExpireDelistedOffersHandler(new ListPublishedJobIdsHandler($jobs), new ExpireJobHandler($jobs, new RecordingEventPublisher()));
         $handler(new ExpireDelistedOffers(['168NPMR', '168NPMT']));
 
         self::assertFalse($jobs->ofId(new JobId('168NPMR'))->isExpired());
@@ -35,10 +36,10 @@ final class ExpireDelistedOffersHandlerTest extends TestCase
     public function testNothingIsExpiredWhenEveryPublishedJobWasSeen(): void
     {
         $jobs = new InMemoryJobRepository();
-        $publishJob = new PublishJobHandler($jobs);
+        $publishJob = new PublishJobHandler($jobs, new RecordingEventPublisher());
         $publishJob($this->publishCommand('168NPMR'));
 
-        $handler = new ExpireDelistedOffersHandler(new ListPublishedJobIdsHandler($jobs), new ExpireJobHandler($jobs));
+        $handler = new ExpireDelistedOffersHandler(new ListPublishedJobIdsHandler($jobs), new ExpireJobHandler($jobs, new RecordingEventPublisher()));
         $handler(new ExpireDelistedOffers(['168NPMR']));
 
         self::assertFalse($jobs->ofId(new JobId('168NPMR'))->isExpired());
