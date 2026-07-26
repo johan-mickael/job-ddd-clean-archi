@@ -8,9 +8,11 @@ offers via hybrid (BM25 + kNN) search. Full product/architecture rules live in
 ## Layout
 
 ```
-api/    Symfony 7 / FrankenPHP backend — Domain, Application, Infrastructure,
-        Presentation as top-level PSR-4 namespaces (see the coding-standard
-        skill). See api/README.md for the FrankenPHP/Docker base image itself.
+api/    Symfony 7 / FrankenPHP backend — each bounded context (Catalog, Search,
+        Ingestion, CandidateProfile, Matching, Shared) is its own top-level
+        PSR-4 namespace, Domain/Application/Infrastructure/Presentation
+        nested inside (see the coding-standard skill). See api/README.md for
+        the FrankenPHP/Docker base image itself.
 web/    Vue 3 + Vite + Tailwind SPA, talks to api/ over HTTP.
 ```
 

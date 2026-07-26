@@ -34,37 +34,37 @@ Presentation    ← depends on Application (Commands, Queries, Results)
 
 - **One type per file**, file named after it (PSR-4). Never two classes in one file.
 - **Prefer many small, well-named files over few large ones.** A big class hides several responsibilities. Class > ~150–200 lines or method > ~20 lines → extract into named collaborators.
-- **Layer-first packaging, bounded context second.** Each layer is its own PSR-4 root — this is what makes the dependency rule physically inspectable (no `App\` catch-all): `Domain\`, `Application\`, `Infrastructure\`, `Presentation\`, each mapped to `api/src/<Layer>/`. Bounded context is the namespace segment right under the layer. No `Entity/`, `Service/`, `Repository/`, `Controller/` buckets below that.
+- **Screaming architecture — bounded context first, layer second.** Each **bounded context is its own PSR-4 root** (no generic `App\` catch-all wrapping everything): `Ingestion\`, `Catalog\`, `Search\`, `CandidateProfile\`, `Matching\`, `Shared\`, each mapped to `api/src/<Context>/`. Layer is the namespace segment right under the context. No `Entity/`, `Service/`, `Repository/`, `Controller/` buckets below that.
   ```
   api/src/
-    Domain/
-      Ingestion/…  Catalog/…  Search/…  CandidateProfile/…  Matching/…
-      Shared/            ← tiny, stable, cross-context kernel only
-    Application/
-      Catalog/PublishJob/{PublishJob.php,PublishJobHandler.php}
-      Matching/…
-    Infrastructure/
-      Persistence/Doctrine/Catalog/{JobEntity.php,JobMapper.php,DoctrineJobRepository.php}
-      Search/Elasticsearch/…
-      FranceTravail/…
-    Presentation/
-      Http/Catalog/JobController.php
-      Http/Matching/…
+    Ingestion/{Domain,Application,Infrastructure}/
+    Catalog/{Domain,Application,Infrastructure,Presentation}/
+      Domain/Job.php  Domain/JobId.php  Domain/Exception/…
+      Application/PublishJob/{PublishJob.php,PublishJobHandler.php}
+      Infrastructure/Persistence/Doctrine/{JobEntity.php,JobMapper.php,DoctrineJobRepository.php}
+      Presentation/Http/JobController.php
+    Search/{Domain,Application,Infrastructure}/
+    CandidateProfile/{Domain,Application,Infrastructure,Presentation}/
+    Matching/{Domain,Application,Infrastructure,Presentation}/
+    Shared/            ← tiny, stable, cross-context kernel only
   ```
   composer.json:
   ```json
   "autoload": {
     "psr-4": {
-      "Domain\\": "src/Domain/",
-      "Application\\": "src/Application/",
-      "Infrastructure\\": "src/Infrastructure/",
-      "Presentation\\": "src/Presentation/",
+      "Ingestion\\": "src/Ingestion/",
+      "Catalog\\": "src/Catalog/",
+      "Search\\": "src/Search/",
+      "CandidateProfile\\": "src/CandidateProfile/",
+      "Matching\\": "src/Matching/",
+      "Shared\\": "src/Shared/",
       "App\\": "src/App/"
     }
   }
   ```
-  `App\` stays a tiny, separate root reserved for Symfony's own bootstrap (`Kernel`, `bin/console` wiring) — it is not a layer and nothing else lives there. deptrac layers are defined on these same four namespace roots, so a Domain class importing `Infrastructure\...` is a build-breaking violation, not a style nit.
-- Class example: `Domain\Catalog\Job` (not `App\Catalog\Domain\Job`). Same class in the old context-first layout would have been `Catalog\Domain\Job` — the context is still fully addressable, just nested one level differently.
+  `App\` stays a tiny, separate root reserved for Symfony's own bootstrap (`Kernel`, `bin/console` wiring) — it is not a bounded context and nothing domain-shaped lives there.
+- Class example: `Catalog\Domain\Job` (not `App\Catalog\Domain\Job`, not `Domain\Catalog\Job`). Deleting or extracting a context to its own service later is `git mv src/Catalog api-catalog/src` — one namespace root, no cross-tree hunting.
+- **Layer purity is deptrac's job, not the folder's.** Because the top segment is now context, not layer, a `Catalog\Domain\Job` importing `Catalog\Infrastructure\...` isn't visible from folder position alone — deptrac (layers defined on the `Domain\|Application\|Infrastructure\|Presentation\` *sub*-namespace segment, one ruleset per context) is what makes that a build-breaking violation. Don't relax the deptrac config just because it reads less obviously in a diff.
 
 ## 3. SOLID
 
@@ -133,7 +133,7 @@ CQRS is **justified here, but only in its lite form** — command/query separati
 ## 10. Error Handling
 
 - **Every throw is a custom domain exception.** Never throw raw `\Exception`, `\RuntimeException`, `\InvalidArgumentException`, `\DomainException`.
-- Name describes what went wrong in ubiquitous language; constructor takes only what the message needs. Group per aggregate under `Domain/{Context}/.../Exception/`.
+- Name describes what went wrong in ubiquitous language; constructor takes only what the message needs. Group per aggregate under `{Context}/Domain/.../Exception/`.
 - **Fail fast** at construction (VOs) and boundaries.
 - **Never swallow** exceptions. Catch only to handle or translate.
 - Exceptions for exceptional flow, **not control flow** (no-matches-found is a return value).
@@ -154,8 +154,8 @@ CQRS is **justified here, but only in its lite form** — command/query separati
 
 ## Checklist Before Committing Any Class
 
-1. Right layer + context; depends only inward; no framework in Domain/Application?
-2. One type per file, named after it, in the right `Layer\Context\` package?
+1. Right context + layer; depends only inward; no framework in Domain/Application?
+2. One type per file, named after it, in the right `Context\Layer\` package?
 3. Small and single-responsibility — not two things hiding together?
 4. `strict_types`, `final`, fully typed, `readonly` where immutable, no `mixed`?
 5. Ubiquitous language; no CRUD/tech verbs in Domain?
