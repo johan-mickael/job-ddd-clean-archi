@@ -18,8 +18,7 @@ final readonly class SearchCriteria
         public array $romeCodes = [],
         public ?string $commune = null,
         public ?int $distanceKm = null,
-    ) {
-    }
+    ) {}
 
     /**
      * @return array<string, string>
@@ -32,7 +31,7 @@ final readonly class SearchCriteria
             $params['motsCles'] = $this->keywords;
         }
 
-        $romeCodes = \array_values(\array_filter($this->romeCodes, static fn (string $code): bool => $code !== ''));
+        $romeCodes = \array_values(\array_filter($this->romeCodes, static fn(string $code): bool => $code !== ''));
         if ($romeCodes !== []) {
             $params['codeROME'] = \implode(',', \array_slice($romeCodes, 0, 3));
         }

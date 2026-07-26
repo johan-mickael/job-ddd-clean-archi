@@ -55,7 +55,7 @@ final class SyncJobOffersHandlerTest extends TestCase
             description: 'Vous rejoignez une équipe backend...',
             companyName: 'Acme Corp',
             contractType: 'cdi',
-            applyUrl: 'https://candidat.francetravail.fr/offres/recherche/detail/'.$offerId,
+            applyUrl: 'https://candidat.francetravail.fr/offres/recherche/detail/' . $offerId,
             publishedAt: new \DateTimeImmutable('2026-07-01'),
             locationLabel: 'Lyon - 69003',
             locationInseeCode: '69383',

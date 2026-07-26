@@ -44,7 +44,7 @@ final class RunScheduledSyncHandlerTest extends TestCase
             description: 'Vous rejoignez une équipe backend...',
             companyName: 'Acme Corp',
             contractType: 'cdi',
-            applyUrl: 'https://candidat.francetravail.fr/offres/recherche/detail/'.$offerId,
+            applyUrl: 'https://candidat.francetravail.fr/offres/recherche/detail/' . $offerId,
             publishedAt: new \DateTimeImmutable('2026-07-01'),
         );
     }
@@ -57,7 +57,7 @@ final class RunScheduledSyncHandlerTest extends TestCase
             description: 'Description',
             companyName: 'Acme Corp',
             contractType: 'cdi',
-            applyUrl: 'https://candidat.francetravail.fr/offres/recherche/detail/'.$jobId,
+            applyUrl: 'https://candidat.francetravail.fr/offres/recherche/detail/' . $jobId,
             publishedAt: new \DateTimeImmutable('2026-01-01'),
         );
     }

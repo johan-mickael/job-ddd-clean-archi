@@ -15,8 +15,7 @@ final class ExpireDelistedOffersHandler
     public function __construct(
         private readonly ListPublishedJobIdsHandlerInterface $listPublishedJobIds,
         private readonly ExpireJobHandlerInterface $expireJob,
-    ) {
-    }
+    ) {}
 
     public function __invoke(ExpireDelistedOffers $command): void
     {

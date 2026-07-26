@@ -16,8 +16,7 @@ final class SyncJobOffersHandler
     public function __construct(
         private readonly JobOfferSource $source,
         private readonly PublishJobHandlerInterface $publishJob,
-    ) {
-    }
+    ) {}
 
     /**
      * @return list<string> ids of every offer processed, for delisting reconciliation

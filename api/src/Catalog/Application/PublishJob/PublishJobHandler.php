@@ -19,9 +19,7 @@ use Shared\Domain\RomeCompetencyCode;
 
 final class PublishJobHandler implements PublishJobHandlerInterface
 {
-    public function __construct(private readonly JobRepositoryInterface $jobs)
-    {
-    }
+    public function __construct(private readonly JobRepositoryInterface $jobs) {}
 
     public function __invoke(PublishJob $command): void
     {

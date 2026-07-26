@@ -6,7 +6,5 @@ namespace Catalog\Application\ExpireJob;
 
 final readonly class ExpireJob
 {
-    public function __construct(public string $jobId)
-    {
-    }
+    public function __construct(public string $jobId) {}
 }

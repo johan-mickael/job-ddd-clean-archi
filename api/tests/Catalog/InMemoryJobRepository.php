@@ -27,8 +27,8 @@ final class InMemoryJobRepository implements JobRepositoryInterface
     public function publishedJobIds(): array
     {
         return \array_values(\array_map(
-            static fn (Job $job): JobId => $job->id,
-            \array_filter($this->jobs, static fn (Job $job): bool => !$job->isExpired()),
+            static fn(Job $job): JobId => $job->id,
+            \array_filter($this->jobs, static fn(Job $job): bool => !$job->isExpired()),
         ));
     }
 }

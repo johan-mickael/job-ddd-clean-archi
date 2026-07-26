@@ -12,9 +12,7 @@ final class FakeJobOfferSource implements JobOfferSource
     /**
      * @param list<IncomingJobOffer> $offers
      */
-    public function __construct(private readonly array $offers)
-    {
-    }
+    public function __construct(private readonly array $offers) {}
 
     public function offersPublishedSince(\DateTimeImmutable $since): iterable
     {

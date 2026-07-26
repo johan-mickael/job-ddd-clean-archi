@@ -9,9 +9,7 @@ use Catalog\Domain\JobRepositoryInterface;
 
 final class ListPublishedJobIdsHandler implements ListPublishedJobIdsHandlerInterface
 {
-    public function __construct(private readonly JobRepositoryInterface $jobs)
-    {
-    }
+    public function __construct(private readonly JobRepositoryInterface $jobs) {}
 
     /**
      * @return list<string>
@@ -19,7 +17,7 @@ final class ListPublishedJobIdsHandler implements ListPublishedJobIdsHandlerInte
     public function __invoke(): array
     {
         return \array_map(
-            static fn (JobId $jobId): string => $jobId->value,
+            static fn(JobId $jobId): string => $jobId->value,
             $this->jobs->publishedJobIds(),
         );
     }

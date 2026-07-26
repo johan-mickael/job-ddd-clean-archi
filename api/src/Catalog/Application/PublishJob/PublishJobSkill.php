@@ -10,6 +10,5 @@ final readonly class PublishJobSkill
         public string $label,
         public ?string $romeCompetencyCode,
         public bool $isRequired,
-    ) {
-    }
+    ) {}
 }

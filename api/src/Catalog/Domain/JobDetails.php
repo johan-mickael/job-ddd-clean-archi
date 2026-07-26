@@ -23,6 +23,5 @@ final readonly class JobDetails
         public int $numberOfPositions = 1,
         public array $skills = [],
         public ?\DateTimeImmutable $updatedAt = null,
-    ) {
-    }
+    ) {}
 }

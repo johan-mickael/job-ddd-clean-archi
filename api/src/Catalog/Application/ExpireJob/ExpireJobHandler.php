@@ -9,9 +9,7 @@ use Catalog\Domain\JobRepositoryInterface;
 
 final class ExpireJobHandler implements ExpireJobHandlerInterface
 {
-    public function __construct(private readonly JobRepositoryInterface $jobs)
-    {
-    }
+    public function __construct(private readonly JobRepositoryInterface $jobs) {}
 
     public function __invoke(ExpireJob $command): void
     {

@@ -25,8 +25,7 @@ final class OAuth2AccessTokenProvider implements AccessTokenProvider
         private readonly string $tokenUrl,
         private readonly string $clientId,
         private readonly string $clientSecret,
-    ) {
-    }
+    ) {}
 
     public function provideToken(): AccessToken
     {

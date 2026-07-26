@@ -28,8 +28,7 @@ final class RunScheduledSyncHandler
     public function __construct(
         private readonly SyncJobOffersHandler $syncJobOffers,
         private readonly ExpireDelistedOffersHandler $expireDelistedOffers,
-    ) {
-    }
+    ) {}
 
     public function __invoke(): void
     {

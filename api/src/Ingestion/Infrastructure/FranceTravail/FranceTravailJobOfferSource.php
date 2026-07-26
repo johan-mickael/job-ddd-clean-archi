@@ -22,8 +22,7 @@ final class FranceTravailJobOfferSource implements JobOfferSource
         private readonly JobOfferPayloadTranslator $translator,
         private readonly string $apiBaseUrl,
         private readonly SearchCriteria $criteria,
-    ) {
-    }
+    ) {}
 
     /**
      * @return iterable<IncomingJobOffer>
@@ -47,9 +46,9 @@ final class FranceTravailJobOfferSource implements JobOfferSource
     private function fetchPage(\DateTimeImmutable $since, \DateTimeImmutable $until, int $firstIndex): SearchResultPage
     {
         try {
-            $response = $this->httpClient->request('GET', $this->apiBaseUrl.'/offres/search', [
+            $response = $this->httpClient->request('GET', $this->apiBaseUrl . '/offres/search', [
                 'headers' => [
-                    'Authorization' => 'Bearer '.$this->tokenProvider->provideToken()->value,
+                    'Authorization' => 'Bearer ' . $this->tokenProvider->provideToken()->value,
                 ],
                 'query' => [
                     ...$this->criteria->toQueryParams(),

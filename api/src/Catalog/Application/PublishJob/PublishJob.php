@@ -30,6 +30,5 @@ final readonly class PublishJob
         public ?int $numberOfPositions = null,
         public array $skills = [],
         public ?\DateTimeImmutable $updatedAt = null,
-    ) {
-    }
+    ) {}
 }

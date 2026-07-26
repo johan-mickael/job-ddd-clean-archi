@@ -13,8 +13,7 @@ final readonly class SearchResultPage
         public array $rawOffers,
         public int $lastIndex,
         public int $total,
-    ) {
-    }
+    ) {}
 
     public function isLastPage(): bool
     {

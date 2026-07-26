@@ -6,7 +6,5 @@ namespace Ingestion\Application\SyncJobOffers;
 
 final readonly class SyncJobOffers
 {
-    public function __construct(public \DateTimeImmutable $since)
-    {
-    }
+    public function __construct(public \DateTimeImmutable $since) {}
 }

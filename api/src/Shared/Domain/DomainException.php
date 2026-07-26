@@ -4,6 +4,4 @@ declare(strict_types=1);
 
 namespace Shared\Domain;
 
-interface DomainException extends \Throwable
-{
-}
+interface DomainException extends \Throwable {}

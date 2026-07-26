@@ -10,9 +10,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 #[AsMessageHandler]
 final class RunScheduledSyncMessageHandler
 {
-    public function __construct(private readonly RunScheduledSyncHandler $runScheduledSync)
-    {
-    }
+    public function __construct(private readonly RunScheduledSyncHandler $runScheduledSync) {}
 
     public function __invoke(RunScheduledSyncMessage $message): void
     {

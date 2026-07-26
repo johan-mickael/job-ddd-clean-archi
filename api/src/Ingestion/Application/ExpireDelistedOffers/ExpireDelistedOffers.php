@@ -9,7 +9,5 @@ final readonly class ExpireDelistedOffers
     /**
      * @param list<string> $seenOfferIds offer ids witnessed on this sync pass
      */
-    public function __construct(public array $seenOfferIds)
-    {
-    }
+    public function __construct(public array $seenOfferIds) {}
 }

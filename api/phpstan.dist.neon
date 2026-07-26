@@ -1,0 +1,9 @@
+parameters:
+    level: max
+    paths:
+        - src
+        - tests
+    excludePaths:
+        - src/App/Kernel.php
+        - tests/bootstrap.php
+    tmpDir: var/cache/phpstan
