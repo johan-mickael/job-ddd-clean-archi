@@ -119,6 +119,9 @@ services:
     Search\Domain\EmbeddingProviderInterface:
         alias: Search\Infrastructure\Cache\CachingEmbeddingProvider
 
+    Search\Application\SearchJobs\SearchJobsHandlerInterface:
+        alias: Search\Application\SearchJobs\SearchJobsHandler
+
     CandidateProfile\:
         resource: "../src/CandidateProfile/"
 
@@ -147,6 +150,9 @@ services:
 
     Matching\:
         resource: "../src/Matching/"
+
+    Matching\Application\MatchJobsToProfile\MatchJobsToProfileHandlerInterface:
+        alias: Matching\Application\MatchJobsToProfile\MatchJobsToProfileHandler
 
     Shared\:
         resource: "../src/Shared/"
