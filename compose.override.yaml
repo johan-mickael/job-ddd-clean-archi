@@ -41,3 +41,18 @@ services:
     ports:
       - "5432"
 ###< doctrine/doctrine-bundle ###
+
+  # Dev-only: browse/manage the search index at http://localhost:8080
+  # (point it at http://localhost:9200 - no auth, xpack.security is off).
+  elasticsearch:
+    ports:
+      - "9200:9200"
+    environment:
+      http.cors.enabled: "true"
+      http.cors.allow-origin: "http://localhost:8080"
+
+  elasticvue:
+    image: cars10/elasticvue
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
