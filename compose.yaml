@@ -63,7 +63,11 @@ services:
         "--memory-limit=128M",
       ]
     healthcheck:
-      disable: true
+      test: ["CMD", "pidof", "php"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.15.3
