@@ -2,7 +2,7 @@
 services:
   php:
     restart: unless-stopped
-    environment:
+    environment: &php_environment
       SERVER_NAME: ${SERVER_NAME:-localhost}, php:80
       DEFAULT_URI: https://${SERVER_NAME:-localhost}:${HTTPS_PORT:-443}
       MERCURE_PUBLISHER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
@@ -35,6 +35,17 @@ services:
         target: 443
         published: ${HTTP3_PORT:-443}
         protocol: udp
+
+  # Consumes the ingestion schedule (license §7.1: sync at least every 24h).
+  # `bin/console messenger:consume` is a long-running process; --time-limit
+  # exits it periodically and restart:unless-stopped brings it back up,
+  # which is the standard way to bound a worker's memory growth.
+  worker:
+    restart: unless-stopped
+    environment: *php_environment
+    command: ["php", "bin/console", "messenger:consume", "scheduler_ingestion", "--time-limit=3600", "--memory-limit=128M"]
+    healthcheck:
+      disable: true
 
 ###> doctrine/doctrine-bundle ###
   database:

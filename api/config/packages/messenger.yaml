@@ -8,7 +8,7 @@ framework:
             # async: '%env(MESSENGER_TRANSPORT_DSN)%'
             # failed: 'doctrine://default?queue_name=failed'
             sync: 'sync://'
-            scheduler_ingestion: 'scheduler://ingestion'
+            scheduler_ingestion: 'schedule://ingestion'
 
         routing:
             # Route your messages to the transports
