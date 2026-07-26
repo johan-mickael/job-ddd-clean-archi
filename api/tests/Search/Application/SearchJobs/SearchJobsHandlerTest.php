@@ -38,8 +38,8 @@ final class SearchJobsHandlerTest extends TestCase
 
         $results = $handler(new SearchJobs('développeur PHP'));
 
-        self::assertCount(1, $results);
-        self::assertSame('168NPMR', $results[0]->jobId);
+        self::assertCount(1, $results->items);
+        self::assertSame('168NPMR', $results->items[0]->jobId);
     }
 
     public function testItEmbedsTheFreeTextBeforeSearching(): void

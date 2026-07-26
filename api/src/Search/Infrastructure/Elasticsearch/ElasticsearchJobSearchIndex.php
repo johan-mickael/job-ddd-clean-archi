@@ -13,11 +13,14 @@ use Search\Domain\JobSearchDocument;
 use Search\Domain\JobSearchIndexInterface;
 use Search\Domain\SearchQuery;
 use Search\Domain\SearchResultItem;
+use Search\Domain\SearchResults;
 
 final class ElasticsearchJobSearchIndex implements JobSearchIndexInterface
 {
-    private const int RANK_WINDOW_SIZE = 50;
-    private const int RESULT_SIZE = 20;
+    // Candidate pool each sub-query contributes before fusion - deep enough
+    // for a few pages of results, not the page size itself (see
+    // SearchQuery::$pageSize for that).
+    private const int RANK_WINDOW_SIZE = 100;
 
     /**
      * Lexical dominates: a literal token match ("PHP") is a stronger
@@ -93,7 +96,7 @@ final class ElasticsearchJobSearchIndex implements JobSearchIndexInterface
         }
     }
 
-    public function search(SearchQuery $query, array $queryEmbedding): array
+    public function search(SearchQuery $query, array $queryEmbedding): SearchResults
     {
         try {
             $lexicalHits = $this->hits($this->client->search([
@@ -121,12 +124,13 @@ final class ElasticsearchJobSearchIndex implements JobSearchIndexInterface
             [self::LEXICAL_WEIGHT, self::SEMANTIC_WEIGHT],
         );
 
+        $offset = ($query->page - 1) * $query->pageSize;
         $results = [];
-        foreach (\array_slice($fusedScores, 0, self::RESULT_SIZE, true) as $id => $score) {
+        foreach (\array_slice($fusedScores, $offset, $query->pageSize, true) as $id => $score) {
             $results[] = $this->toResultItem($sourceById[$id], $score);
         }
 
-        return $results;
+        return new SearchResults($results, $query->page, $query->pageSize, \count($fusedScores));
     }
 
     /**
@@ -207,7 +211,7 @@ final class ElasticsearchJobSearchIndex implements JobSearchIndexInterface
                 ],
             ],
             'size' => self::RANK_WINDOW_SIZE,
-            '_source' => ['jobId', 'title', 'companyName', 'locationLabel', 'applyUrl'],
+            '_source' => ['jobId', 'title', 'companyName', 'locationLabel', 'applyUrl', 'publishedAt'],
         ];
     }
 
@@ -228,7 +232,7 @@ final class ElasticsearchJobSearchIndex implements JobSearchIndexInterface
                 'filter' => ['bool' => ['filter' => $this->filters($query)]],
             ],
             'size' => self::RANK_WINDOW_SIZE,
-            '_source' => ['jobId', 'title', 'companyName', 'locationLabel', 'applyUrl'],
+            '_source' => ['jobId', 'title', 'companyName', 'locationLabel', 'applyUrl', 'publishedAt'],
         ];
     }
 
@@ -251,18 +255,18 @@ final class ElasticsearchJobSearchIndex implements JobSearchIndexInterface
     }
 
     /**
-     * @return list<array{_id: string, _source: array{jobId: string, title: string, companyName: string, locationLabel?: ?string, applyUrl: string}}>
+     * @return list<array{_id: string, _source: array{jobId: string, title: string, companyName: string, locationLabel?: ?string, applyUrl: string, publishedAt: string}}>
      */
     private function hits(Elasticsearch|Promise $response): array
     {
-        /** @var array{hits?: array{hits?: list<array{_id: string, _source: array{jobId: string, title: string, companyName: string, locationLabel?: ?string, applyUrl: string}}>}} $body */
+        /** @var array{hits?: array{hits?: list<array{_id: string, _source: array{jobId: string, title: string, companyName: string, locationLabel?: ?string, applyUrl: string, publishedAt: string}}>}} $body */
         $body = $this->toArray($response);
 
         return $body['hits']['hits'] ?? [];
     }
 
     /**
-     * @param array{jobId: string, title: string, companyName: string, locationLabel?: ?string, applyUrl: string} $source
+     * @param array{jobId: string, title: string, companyName: string, locationLabel?: ?string, applyUrl: string, publishedAt: string} $source
      */
     private function toResultItem(array $source, float $score): SearchResultItem
     {
@@ -272,6 +276,7 @@ final class ElasticsearchJobSearchIndex implements JobSearchIndexInterface
             companyName: $source['companyName'],
             locationLabel: $source['locationLabel'] ?? null,
             applyUrl: $source['applyUrl'],
+            publishedAt: new \DateTimeImmutable($source['publishedAt']),
             score: $score,
         );
     }

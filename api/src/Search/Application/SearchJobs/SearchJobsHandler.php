@@ -7,7 +7,7 @@ namespace Search\Application\SearchJobs;
 use Search\Domain\EmbeddingProviderInterface;
 use Search\Domain\JobSearchIndexInterface;
 use Search\Domain\SearchQuery;
-use Search\Domain\SearchResultItem;
+use Search\Domain\SearchResults;
 
 final class SearchJobsHandler
 {
@@ -16,15 +16,12 @@ final class SearchJobsHandler
         private readonly EmbeddingProviderInterface $embeddings,
     ) {}
 
-    /**
-     * @return list<SearchResultItem>
-     */
-    public function __invoke(SearchJobs $query): array
+    public function __invoke(SearchJobs $query): SearchResults
     {
         $embedding = $this->embeddings->embed($query->freeText);
 
         return $this->index->search(
-            new SearchQuery($query->freeText, $query->contractType, $query->romeCode),
+            new SearchQuery($query->freeText, $query->contractType, $query->romeCode, $query->page, $query->pageSize),
             $embedding,
         );
     }

@@ -26,9 +26,7 @@ interface JobSearchIndexInterface
     /**
      * @param list<float> $queryEmbedding
      *
-     * @return list<SearchResultItem>
-     *
      * @throws JobSearchIndexUnavailable
      */
-    public function search(SearchQuery $query, array $queryEmbedding): array;
+    public function search(SearchQuery $query, array $queryEmbedding): SearchResults;
 }

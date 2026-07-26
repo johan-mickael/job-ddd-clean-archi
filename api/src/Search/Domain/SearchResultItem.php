@@ -12,6 +12,7 @@ final readonly class SearchResultItem
         public string $companyName,
         public ?string $locationLabel,
         public string $applyUrl,
+        public \DateTimeImmutable $publishedAt,
         public float $score,
     ) {}
 }

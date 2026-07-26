@@ -10,5 +10,7 @@ final readonly class SearchQuery
         public string $freeText,
         public ?string $contractType = null,
         public ?string $romeCode = null,
+        public int $page = 1,
+        public int $pageSize = 20,
     ) {}
 }
