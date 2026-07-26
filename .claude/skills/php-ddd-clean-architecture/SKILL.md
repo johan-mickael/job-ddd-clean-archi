@@ -15,7 +15,7 @@ Stack is **PHP 8.3+ / Symfony 7**. **DDD is mandatory** — the backbone of the 
 
 ## 1. Clean Architecture — The Dependency Rule
 
-```
+```text
 Domain          ← depends on nothing here, and NOTHING from Symfony/Doctrine
    ↑
 Application     ← depends only on Domain
@@ -35,7 +35,8 @@ Presentation    ← depends on Application (Commands, Queries, Results)
 - **One type per file**, file named after it (PSR-4). Never two classes in one file.
 - **Prefer many small, well-named files over few large ones.** A big class hides several responsibilities. Class > ~150–200 lines or method > ~20 lines → extract into named collaborators.
 - **Screaming architecture — bounded context first, layer second.** Each **bounded context is its own PSR-4 root** (no generic `App\` catch-all wrapping everything): `Ingestion\`, `Catalog\`, `Search\`, `CandidateProfile\`, `Matching\`, `Shared\`, each mapped to `api/src/<Context>/`. Layer is the namespace segment right under the context. No `Entity/`, `Service/`, `Repository/`, `Controller/` buckets below that.
-  ```
+
+  ```text
   api/src/
     Ingestion/{Domain,Application,Infrastructure}/
     Catalog/{Domain,Application,Infrastructure,Presentation}/
@@ -48,7 +49,9 @@ Presentation    ← depends on Application (Commands, Queries, Results)
     Matching/{Domain,Application,Infrastructure,Presentation}/
     Shared/            ← tiny, stable, cross-context kernel only
   ```
+
   composer.json:
+
   ```json
   "autoload": {
     "psr-4": {
@@ -62,9 +65,11 @@ Presentation    ← depends on Application (Commands, Queries, Results)
     }
   }
   ```
+
   `App\` stays a tiny, separate root reserved for Symfony's own bootstrap (`Kernel`, `bin/console` wiring) — it is not a bounded context and nothing domain-shaped lives there.
+
 - Class example: `Catalog\Domain\Job` (not `App\Catalog\Domain\Job`, not `Domain\Catalog\Job`). Deleting or extracting a context to its own service later is `git mv src/Catalog api-catalog/src` — one namespace root, no cross-tree hunting.
-- **Layer purity is deptrac's job, not the folder's.** Because the top segment is now context, not layer, a `Catalog\Domain\Job` importing `Catalog\Infrastructure\...` isn't visible from folder position alone — deptrac (layers defined on the `Domain\|Application\|Infrastructure\|Presentation\` *sub*-namespace segment, one ruleset per context) is what makes that a build-breaking violation. Don't relax the deptrac config just because it reads less obviously in a diff.
+- **Layer purity is deptrac's job, not the folder's.** Because the top segment is now context, not layer, a `Catalog\Domain\Job` importing `Catalog\Infrastructure\...` isn't visible from folder position alone — deptrac (layers defined on the `Domain\|Application\|Infrastructure\|Presentation\` _sub_-namespace segment, one ruleset per context) is what makes that a build-breaking violation. Don't relax the deptrac config just because it reads less obviously in a diff.
 
 ## 3. SOLID
 
@@ -91,7 +96,7 @@ Presentation    ← depends on Application (Commands, Queries, Results)
 - Meaningful, pronounceable, searchable names. No `data`, `tmp`, `mgr`, `helper`, `util`, `manager` in the domain.
 - Small functions doing one thing at one level of abstraction. Comment-worthy block → extract a named method.
 - ≤ 2 args ideal; 3 is a smell; more means a missing object. **No boolean flag args** — split into two methods.
-- **Command–Query Separation** — a method does *or* answers, never both.
+- **Command–Query Separation** — a method does _or_ answers, never both.
 - **Tell, Don't Ask** — `$offer->expire()`, not read-status-then-set from outside.
 - **Law of Demeter** — no `$a->getB()->getC()->do()` train-wrecks.
 - No `null` for "not found" in domain reads — throw a domain exception or return an explicit empty/typed-optional.
@@ -162,5 +167,5 @@ CQRS is **justified here, but only in its lite form** — command/query separati
 6. Rule-bearing primitives wrapped in VOs; collections encapsulated?
 7. Rich behavior (not anemic); Tell-Don't-Ask; no Demeter train-wrecks?
 8. Every throw a custom domain exception; nothing swallowed?
-9. Each function one thing, ≤ 2 args, no flag args, command *or* query?
+9. Each function one thing, ≤ 2 args, no flag args, command _or_ query?
 10. Full implementation — no stubs, no `// ...`, no TODOs — would a domain expert recognize their language?

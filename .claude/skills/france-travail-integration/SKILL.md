@@ -28,28 +28,28 @@ France Travail is the ex-Pôle emploi (rebranded Jan 2024). Developer platform: 
 
 ### Search query parameters (verified, not exhaustive of every referential filter but complete for the documented ones)
 
-| Param | Cardinality | Notes |
-|---|---|---|
-| `range` | 0..1 | Pagination: `first-last`, e.g. `range=0-49`. First index ≤ 1000, last index ≤ 1149, span ≤ 150 per call. Up to 1150 offers reachable per distinct search by paging; narrow with dates if more exist. |
-| `sort` | 0..1 | `0`=pertinence↓/distance↑/date↓ (default), `1`=date↓ first, `2`=distance↑ first. |
-| `motsCles` | 0..7 | Free-text; matches `intitule`, `romeCode`, `romeLibelle`, `competences.libelle`, `formations.domaineLibelle`, `permis.libelle`, `langues.libelle`, and `description` (if matched via title/ROME libelle). |
-| `domaine`, `codeROME` (0..3), `theme`, `appellation`, `secteurActivite` (0..2, comma-sep NAF codes) | — | Referential-code filters; always send the **code**, never the label. |
-| `experience` | 0..1 | `1`=<1yr, `2`=1-3yr, `3`=>3yr. |
-| `experienceExigence` | 0..1 | `D`=débutant accepté, `S`=souhaitée, `E`=exigée. |
-| `typeContrat` | 0..10 | Comma-sep codes (`CDI`,`CDD`,`MIS`,`LIB`,...). OR'd with `natureContrat` when both given — read the doc's remark before combining. |
-| `natureContrat` | 0..n | Comma-sep codes (`E1`,`NS`,...). |
-| `origineOffre` | 0..1 | `1`=France Travail, `2`=Partenaire. |
-| `qualification` | 0..1 | `0`=non cadre, `9`=cadre (search-filter granularity; detail response has a finer 1-9 `qualificationCode`, see below). |
-| `tempsPlein` | 0..1 | boolean. |
-| `commune` (0..5, INSEE code) + `distance` (default 10, `0`=exact commune only) | — | Paris/Lyon have special-cased radius behavior per the doc. |
-| `departement` (0..5) + `inclureLimitrophes` | — | |
-| `region`, `paysContinent`, `niveauFormation`, `permis` | 0..1 | Referential codes. |
-| `salaireMin` + `periodeSalaire` (`M`/`A`/`H`/`C`) | 0..1 | Both or neither. |
-| `accesTravailleurHandicape`, `offresMRS` | 0..1 | booleans. |
-| `grandDomaine` | 0..n | Big letter-coded domain buckets (A=Agriculture...N=Transport/Logistique). |
-| `publieeDepuis` | 0..1 | days: `1`, `3`, `7`, `14`, `31`. |
-| `minCreationDate` + `maxCreationDate` | 0..1 | ISO-8601 `YYYY-MM-DDTHH:MM:SSZ`, both required together. This pair is the intended way to page past the 1150-result ceiling. |
-| `modeSelectionPartenaires` + `partenaires` (0..20) | — | Include/exclude specific partner sources. |
+| Param                                                                                               | Cardinality | Notes                                                                                                                                                                                                     |
+| --------------------------------------------------------------------------------------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `range`                                                                                             | 0..1        | Pagination: `first-last`, e.g. `range=0-49`. First index ≤ 1000, last index ≤ 1149, span ≤ 150 per call. Up to 1150 offers reachable per distinct search by paging; narrow with dates if more exist.      |
+| `sort`                                                                                              | 0..1        | `0`=pertinence↓/distance↑/date↓ (default), `1`=date↓ first, `2`=distance↑ first.                                                                                                                          |
+| `motsCles`                                                                                          | 0..7        | Free-text; matches `intitule`, `romeCode`, `romeLibelle`, `competences.libelle`, `formations.domaineLibelle`, `permis.libelle`, `langues.libelle`, and `description` (if matched via title/ROME libelle). |
+| `domaine`, `codeROME` (0..3), `theme`, `appellation`, `secteurActivite` (0..2, comma-sep NAF codes) | —           | Referential-code filters; always send the **code**, never the label.                                                                                                                                      |
+| `experience`                                                                                        | 0..1        | `1`=<1yr, `2`=1-3yr, `3`=>3yr.                                                                                                                                                                            |
+| `experienceExigence`                                                                                | 0..1        | `D`=débutant accepté, `S`=souhaitée, `E`=exigée.                                                                                                                                                          |
+| `typeContrat`                                                                                       | 0..10       | Comma-sep codes (`CDI`,`CDD`,`MIS`,`LIB`,...). OR'd with `natureContrat` when both given — read the doc's remark before combining.                                                                        |
+| `natureContrat`                                                                                     | 0..n        | Comma-sep codes (`E1`,`NS`,...).                                                                                                                                                                          |
+| `origineOffre`                                                                                      | 0..1        | `1`=France Travail, `2`=Partenaire.                                                                                                                                                                       |
+| `qualification`                                                                                     | 0..1        | `0`=non cadre, `9`=cadre (search-filter granularity; detail response has a finer 1-9 `qualificationCode`, see below).                                                                                     |
+| `tempsPlein`                                                                                        | 0..1        | boolean.                                                                                                                                                                                                  |
+| `commune` (0..5, INSEE code) + `distance` (default 10, `0`=exact commune only)                      | —           | Paris/Lyon have special-cased radius behavior per the doc.                                                                                                                                                |
+| `departement` (0..5) + `inclureLimitrophes`                                                         | —           |                                                                                                                                                                                                           |
+| `region`, `paysContinent`, `niveauFormation`, `permis`                                              | 0..1        | Referential codes.                                                                                                                                                                                        |
+| `salaireMin` + `periodeSalaire` (`M`/`A`/`H`/`C`)                                                   | 0..1        | Both or neither.                                                                                                                                                                                          |
+| `accesTravailleurHandicape`, `offresMRS`                                                            | 0..1        | booleans.                                                                                                                                                                                                 |
+| `grandDomaine`                                                                                      | 0..n        | Big letter-coded domain buckets (A=Agriculture...N=Transport/Logistique).                                                                                                                                 |
+| `publieeDepuis`                                                                                     | 0..1        | days: `1`, `3`, `7`, `14`, `31`.                                                                                                                                                                          |
+| `minCreationDate` + `maxCreationDate`                                                               | 0..1        | ISO-8601 `YYYY-MM-DDTHH:MM:SSZ`, both required together. This pair is the intended way to page past the 1150-result ceiling.                                                                              |
+| `modeSelectionPartenaires` + `partenaires` (0..20)                                                  | —           | Include/exclude specific partner sources.                                                                                                                                                                 |
 
 ### Response shape
 
@@ -63,6 +63,7 @@ France Travail is the ex-Pôle emploi (rebranded Jan 2024). Developer platform: 
 Top-level: `id` (7-char, also derivable into `https://candidat.francetravail.fr/offres/recherche/detail/{id}`), `intitule`, `description`, `dateCreation`, `dateActualisation`, `romeCode`, `romeLibelle`, `appellationLibelle`, `typeContrat` (required), `typeContratLibelle` (required), `natureContrat`, `experienceExige` (`D`/`E`/`S`), `experienceLibelle`, `experienceCommentaire`, `outilsBureautiques`, `dureeTravailLibelle`, `complementExercice`, `conditionExercice`, `alternance` (bool), `nombrePostes`, `accessibleTH` (bool), `deplacementCode`, `deplacementLibelle`, `qualificationCode` (`1`..`9`, Manœuvre→Cadre), `qualificationLibelle`, `secteurActivite` (NAF code), `secteurActiviteLibelle`, `trancheEffectifEtab`.
 
 Nested:
+
 - `lieuTravail`: `libelle`, `latitude`, `longitude`, `codepostal`, `commune` (INSEE code).
 - `entreprise`: `nom`, `description`, `logo` (URL), `url`.
 - `origineOffre` (required): `origine` (`1`=FT,`2`=Partenaire), `urlOrigine` (**the required deep-link target**, §7.4/escape hatch), `partenaires[]` (`nom`,`url`,`logo`).

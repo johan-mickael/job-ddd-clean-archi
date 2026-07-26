@@ -1,6 +1,6 @@
 {
-  "//": "Copy this file to settings.local.json for personal overrides. settings.local.json is gitignored — never commit it. Use it for machine-specific permissions or env, e.g. widening Bash access on your own machine.",
-  "permissions": {
-    "allow": []
-  }
+    "//": "Copy this file to settings.local.json for personal overrides. settings.local.json is gitignored — never commit it. Use it for machine-specific permissions or env, e.g. widening Bash access on your own machine.",
+    "permissions": {
+        "allow": []
+    }
 }

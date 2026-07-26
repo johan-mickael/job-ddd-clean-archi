@@ -7,7 +7,7 @@ offers via hybrid (BM25 + kNN) search. Full product/architecture rules live in
 
 ## Layout
 
-```
+```text
 api/    Symfony 7 / FrankenPHP backend — each bounded context (Catalog, Search,
         Ingestion, CandidateProfile, Matching, Shared) is its own top-level
         PSR-4 namespace, Domain/Application/Infrastructure/Presentation
@@ -24,7 +24,7 @@ phase that needs them.
 
 ## Getting started
 
-```
+```bash
 docker compose build --no-cache
 docker compose up -d
 ```
@@ -32,7 +32,6 @@ docker compose up -d
 First boot installs the Symfony skeleton into `api/` automatically (see
 `api/frankenphp/docker-entrypoint.sh`).
 
-```
+```bash
 cd web && npm install && npm run dev
 ```
-# job-ddd-clean-archi

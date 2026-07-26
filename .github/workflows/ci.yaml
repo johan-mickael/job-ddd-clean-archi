@@ -119,3 +119,18 @@ jobs:
           VALIDATE_PHP_PHPCS: false
           VALIDATE_PHP_PHPSTAN: false
           VALIDATE_PHP_PSALM: false
+          # Pedantic prose-style terminology rule (git -> Git, id -> ID);
+          # doesn't fit this project's docs/skill-file writing conventions
+          # and flags no real defect.
+          VALIDATE_NATURAL_LANGUAGE: false
+          # dotenv-linter only flags alphabetical key ordering here, which
+          # would break the deliberate logical grouping in api/.env (token
+          # URL, then the credentials that fetch it, then search filters).
+          VALIDATE_ENV: false
+          # Recipe/scaffold territory we don't hand-format: symfony-docker's
+          # own bundled docs and entrypoint script, devcontainer config, the
+          # Flex-generated api/config/packages|routes files (services.yaml
+          # is our own and stays linted), the vendor phpstorm-meta stub, and
+          # the web/ SPA scaffold (frontend work hasn't started - see
+          # CLAUDE.md build phases).
+          FILTER_REGEX_EXCLUDE: "api/docs/|api/frankenphp/|\\.devcontainer/|api/config/reference\\.php|api/config/packages/|api/config/routes|api/phpunit\\.dist\\.xml|compose\\.override\\.yaml|compose\\.prod\\.yaml|web/"

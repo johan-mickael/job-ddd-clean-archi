@@ -10,7 +10,7 @@ description: Git workflow and commit message rules. Applies to every commit and 
 - **Summary ≤ 50 chars**, imperative mood ("add", not "added"/"adds"), lowercase, no trailing period.
 - `type` ∈ `feat`, `fix`, `refactor`, `test`, `docs`, `chore`, `perf`, `build`, `ci`.
 - `context` is the bounded context or area: `ingestion`, `catalog`, `search`, `profile`, `matching`, `shared`, `infra`.
-- **Body only when the *why* isn't obvious** from the summary. Wrap at 72 chars. Explain intent and trade-offs, never restate the diff.
+- **Body only when the _why_ isn't obvious** from the summary. Wrap at 72 chars. Explain intent and trade-offs, never restate the diff.
 - Reference an issue when one exists: `Refs #42` / `Closes #42`.
 
 ## Banned commit messages
@@ -31,7 +31,7 @@ description: Git workflow and commit message rules. Applies to every commit and 
 
 ## Examples
 
-```
+```text
 feat(matching): explain skill gaps grounded in ROME codes
 fix(ingestion): refresh France Travail token before expiry
 refactor(catalog): extract OfferStatus into a backed enum

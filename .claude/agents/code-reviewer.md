@@ -20,7 +20,7 @@ Review only the changed files (use `git diff --name-only` and `git diff`). For e
 5. **Naming / ubiquitous language** — intention-revealing; no `create/update/manage/handle/process` in Domain; exception names tell the story.
 6. **Error handling** — only custom domain exceptions thrown; nothing swallowed; infrastructure errors translated at the boundary; untrusted LLM/API JSON validated before entering the domain.
 7. **Clean Code** — small functions, ≤ 2 args, no flag args, Command–Query Separation, Tell-Don't-Ask, no Law-of-Demeter train-wrecks.
-8. **Hygiene** — comments only explain *why*; no dead/commented-out code; no `TODO`/`FIXME`; no debug dumps.
+8. **Hygiene** — comments only explain _why_; no dead/commented-out code; no `TODO`/`FIXME`; no debug dumps.
 9. **Tests** — behavior-named; assert real behavior; only ports mocked.
 
 Output: a short verdict (approve / changes required), then a grouped list of concrete issues

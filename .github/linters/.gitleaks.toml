@@ -1,0 +1,9 @@
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Dev/test-only Symfony secrets, never used in prod"
+paths = [
+  '''api/\.env\.dev$''',
+  '''api/\.env\.test$''',
+]

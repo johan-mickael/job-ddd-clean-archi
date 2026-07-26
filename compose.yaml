@@ -52,7 +52,16 @@ services:
   worker:
     restart: unless-stopped
     environment: *php_environment
-    command: ["php", "bin/console", "messenger:consume", "scheduler_ingestion", "async", "--time-limit=3600", "--memory-limit=128M"]
+    command:
+      [
+        "php",
+        "bin/console",
+        "messenger:consume",
+        "scheduler_ingestion",
+        "async",
+        "--time-limit=3600",
+        "--memory-limit=128M",
+      ]
     healthcheck:
       disable: true
 
@@ -65,7 +74,11 @@ services:
       xpack.license.self_generated.type: basic
       ES_JAVA_OPTS: -Xms512m -Xmx512m
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:9200/_cluster/health || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          "curl -sf http://localhost:9200/_cluster/health || exit 1",
+        ]
       timeout: 5s
       retries: 10
       start_period: 60s
@@ -83,7 +96,7 @@ services:
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
 
-###> doctrine/doctrine-bundle ###
+  ###> doctrine/doctrine-bundle ###
   database:
     image: postgres:${POSTGRES_VERSION:-16}-alpine
     restart: unless-stopped
@@ -93,7 +106,15 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
       POSTGRES_USER: ${POSTGRES_USER:-app}
     healthcheck:
-      test: ["CMD", "pg_isready", "-d", "${POSTGRES_DB:-app}", "-U", "${POSTGRES_USER:-app}"]
+      test:
+        [
+          "CMD",
+          "pg_isready",
+          "-d",
+          "${POSTGRES_DB:-app}",
+          "-U",
+          "${POSTGRES_USER:-app}",
+        ]
       timeout: 5s
       retries: 5
       start_period: 60s
@@ -112,8 +133,8 @@ volumes:
   caddy_config:
   elasticsearch_data:
   rabbitmq_data:
-###> symfony/mercure-bundle ###
-###< symfony/mercure-bundle ###
-###> doctrine/doctrine-bundle ###
+  ###> symfony/mercure-bundle ###
+  ###< symfony/mercure-bundle ###
+  ###> doctrine/doctrine-bundle ###
   database_data:
 ###< doctrine/doctrine-bundle ###

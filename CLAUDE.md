@@ -49,17 +49,17 @@ Non-negotiable headlines (the skill carries the detail):
 
 ## 3. Tech Stack (decided — do not re-litigate without reason)
 
-| Concern | Choice | Notes |
-|---|---|---|
-| Language / framework | **PHP 8.3+ / Symfony 7** | The clean-code showcase. |
-| System of record | **PostgreSQL** (Doctrine) | Durable truth: raw + normalized jobs, users, CVs, match history. |
-| Search index | **Elasticsearch** (`elasticsearch-php`) | Derived, disposable, rebuildable from Postgres. |
-| Async / scheduling | **Symfony Messenger + Scheduler** | Ingestion, embedding, indexing as messages. |
-| CV text extraction | `smalot/pdfparser` or `pdftotext` (PDF), `PhpOffice/PhpWord` (DOCX) | Extract raw text only. |
-| Structured extraction | **Hosted LLM** (Anthropic/OpenAI) → strict JSON | No hand-built skill dictionary. |
-| Embeddings | **Hosted multilingual model** (e.g. OpenAI `text-embedding-3-large`, Cohere `embed-multilingual`, or Voyage) | Must handle French. Stored as `dense_vector`. |
-| Natural-language search + match explanation | **Hosted LLM** | See §7 and §8. |
-| Frontend | **Vue or React + Tailwind + shadcn/ui** (decoupled SPA over a Symfony API) | Use the `frontend-design` skill so it doesn't look templated. A Symfony UX/Twig monolith is an acceptable fallback if scope needs cutting. |
+| Concern                                     | Choice                                                                                                       | Notes                                                                                                                                      |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Language / framework                        | **PHP 8.3+ / Symfony 7**                                                                                     | The clean-code showcase.                                                                                                                   |
+| System of record                            | **PostgreSQL** (Doctrine)                                                                                    | Durable truth: raw + normalized jobs, users, CVs, match history.                                                                           |
+| Search index                                | **Elasticsearch** (`elasticsearch-php`)                                                                      | Derived, disposable, rebuildable from Postgres.                                                                                            |
+| Async / scheduling                          | **Symfony Messenger + Scheduler**                                                                            | Ingestion, embedding, indexing as messages.                                                                                                |
+| CV text extraction                          | `smalot/pdfparser` or `pdftotext` (PDF), `PhpOffice/PhpWord` (DOCX)                                          | Extract raw text only.                                                                                                                     |
+| Structured extraction                       | **Hosted LLM** (Anthropic/OpenAI) → strict JSON                                                              | No hand-built skill dictionary.                                                                                                            |
+| Embeddings                                  | **Hosted multilingual model** (e.g. OpenAI `text-embedding-3-large`, Cohere `embed-multilingual`, or Voyage) | Must handle French. Stored as `dense_vector`.                                                                                              |
+| Natural-language search + match explanation | **Hosted LLM**                                                                                               | See §7 and §8.                                                                                                                             |
+| Frontend                                    | **Vue or React + Tailwind + shadcn/ui** (decoupled SPA over a Symfony API)                                   | Use the `frontend-design` skill so it doesn't look templated. A Symfony UX/Twig monolith is an acceptable fallback if scope needs cutting. |
 
 **Do NOT add** LangChain/LlamaIndex-style orchestration frameworks. The two or three LLM calls are hand-rolled as clean Application-layer services — this reads better and stays explainable.
 
@@ -69,7 +69,7 @@ Non-negotiable headlines (the skill carries the detail):
 
 ## 4. Architecture Overview
 
-```
+```text
 France Travail API
       │  (scheduled, ≥ every 24h — license floor)
       ▼

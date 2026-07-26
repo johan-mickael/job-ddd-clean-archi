@@ -1,0 +1,10 @@
+---
+default: true
+
+# Claude Code command/agent/skill files intentionally open with prose or
+# frontmatter, not an H1 - they aren't articles.
+MD041: false
+
+# Skill/rule docs have long technical lines (tables, prose) by design;
+# hard-wrapping them hurts readability without fixing anything real.
+MD013: false

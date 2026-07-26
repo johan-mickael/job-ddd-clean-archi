@@ -6,8 +6,8 @@ description: Everyday code-hygiene rules — comments, dead code, docblocks, nam
 
 ## Comments — only when necessary
 
-- **Default to no comment.** Well-named methods and Value Objects are the documentation. If you reach for a comment to explain *what* code does, rename or extract instead.
-- A comment is allowed **only to explain *why*** when the reason is non-obvious (a workaround, a regulatory constraint, a deliberate trade-off). Example worth keeping: `// France Travail licence forbids retaining recruiter contact data after an offer is delisted`.
+- **Default to no comment.** Well-named methods and Value Objects are the documentation. If you reach for a comment to explain _what_ code does, rename or extract instead.
+- A comment is allowed **only to explain _why_** when the reason is non-obvious (a workaround, a regulatory constraint, a deliberate trade-off). Example worth keeping: `// France Travail licence forbids retaining recruiter contact data after an offer is delisted`.
 - **No comments that restate the code** (`// increment counter`), no section-divider banners, no changelog/author comments (git owns history).
 
 ## Docblocks

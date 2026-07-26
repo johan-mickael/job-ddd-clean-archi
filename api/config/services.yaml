@@ -1,3 +1,4 @@
+---
 # yaml-language-server: $schema=../vendor/symfony/dependency-injection/Loader/schema/services.schema.json
 
 # This file is the entry point to configure your own services.
@@ -7,57 +8,57 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-    ingestion.france_travail.token_url: '%env(FT_TOKEN_URL)%'
-    ingestion.france_travail.client_id: '%env(FT_CLIENT_ID)%'
-    ingestion.france_travail.client_secret: '%env(FT_CLIENT_SECRET)%'
-    ingestion.france_travail.api_base_url: '%env(FT_API_BASE_URL)%'
-    ingestion.france_travail.search.keywords: '%env(FT_SEARCH_KEYWORDS)%'
-    ingestion.france_travail.search.rome_codes: '%env(csv:FT_SEARCH_ROME_CODES)%'
-    ingestion.france_travail.search.commune: '%env(FT_SEARCH_COMMUNE)%'
-    ingestion.france_travail.search.distance_km: '%env(int:FT_SEARCH_DISTANCE_KM)%'
-    search.elasticsearch.dsn: '%env(ELASTICSEARCH_DSN)%'
-    search.elasticsearch.index_name: '%env(SEARCH_INDEX_NAME)%'
-    search.gemini.api_key: '%env(EMBEDDING_API_KEY)%'
-    search.gemini.model: '%env(EMBEDDING_MODEL)%'
-    search.gemini.dimensions: '%env(int:EMBEDDING_DIMENSIONS)%'
+    ingestion.france_travail.token_url: "%env(FT_TOKEN_URL)%"
+    ingestion.france_travail.client_id: "%env(FT_CLIENT_ID)%"
+    ingestion.france_travail.client_secret: "%env(FT_CLIENT_SECRET)%"
+    ingestion.france_travail.api_base_url: "%env(FT_API_BASE_URL)%"
+    ingestion.france_travail.search.keywords: "%env(FT_SEARCH_KEYWORDS)%"
+    ingestion.france_travail.search.rome_codes: "%env(csv:FT_SEARCH_ROME_CODES)%"
+    ingestion.france_travail.search.commune: "%env(FT_SEARCH_COMMUNE)%"
+    ingestion.france_travail.search.distance_km: "%env(int:FT_SEARCH_DISTANCE_KM)%"
+    search.elasticsearch.dsn: "%env(ELASTICSEARCH_DSN)%"
+    search.elasticsearch.index_name: "%env(SEARCH_INDEX_NAME)%"
+    search.gemini.api_key: "%env(EMBEDDING_API_KEY)%"
+    search.gemini.model: "%env(EMBEDDING_MODEL)%"
+    search.gemini.dimensions: "%env(int:EMBEDDING_DIMENSIONS)%"
 
 services:
     # default configuration for services in *this* file
     _defaults:
-        autowire: true      # Automatically injects dependencies in your services.
+        autowire: true # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
     # one resource block per bounded context (screaming architecture: context
     # is the PSR-4 root, see the php-ddd-clean-architecture skill). src/App/
     # holds only the Kernel and is intentionally not autowired as a service.
     Ingestion\:
-        resource: '../src/Ingestion/'
+        resource: "../src/Ingestion/"
 
     Ingestion\Infrastructure\FranceTravail\OAuth2AccessTokenProvider:
         arguments:
-            $tokenUrl: '%ingestion.france_travail.token_url%'
-            $clientId: '%ingestion.france_travail.client_id%'
-            $clientSecret: '%ingestion.france_travail.client_secret%'
+            $tokenUrl: "%ingestion.france_travail.token_url%"
+            $clientId: "%ingestion.france_travail.client_id%"
+            $clientSecret: "%ingestion.france_travail.client_secret%"
 
     Ingestion\Infrastructure\FranceTravail\AccessTokenProvider:
         alias: Ingestion\Infrastructure\FranceTravail\OAuth2AccessTokenProvider
 
     Ingestion\Infrastructure\FranceTravail\SearchCriteria:
         arguments:
-            $keywords: '%ingestion.france_travail.search.keywords%'
-            $romeCodes: '%ingestion.france_travail.search.rome_codes%'
-            $commune: '%ingestion.france_travail.search.commune%'
-            $distanceKm: '%ingestion.france_travail.search.distance_km%'
+            $keywords: "%ingestion.france_travail.search.keywords%"
+            $romeCodes: "%ingestion.france_travail.search.rome_codes%"
+            $commune: "%ingestion.france_travail.search.commune%"
+            $distanceKm: "%ingestion.france_travail.search.distance_km%"
 
     Ingestion\Infrastructure\FranceTravail\FranceTravailJobOfferSource:
         arguments:
-            $apiBaseUrl: '%ingestion.france_travail.api_base_url%'
+            $apiBaseUrl: "%ingestion.france_travail.api_base_url%"
 
     Ingestion\Domain\JobOfferSource:
         alias: Ingestion\Infrastructure\FranceTravail\FranceTravailJobOfferSource
 
     Catalog\:
-        resource: '../src/Catalog/'
+        resource: "../src/Catalog/"
 
     Catalog\Domain\JobRepositoryInterface:
         alias: Catalog\Infrastructure\Persistence\Doctrine\DoctrineJobRepository
@@ -78,27 +79,31 @@ services:
         alias: Catalog\Infrastructure\Messenger\MessengerEventPublisher
 
     Search\:
-        resource: '../src/Search/'
+        resource: "../src/Search/"
 
     Elastic\Elasticsearch\Client:
-        factory: ['Search\Infrastructure\Elasticsearch\ElasticsearchClientFactory', 'create']
+        factory:
+            [
+                'Search\Infrastructure\Elasticsearch\ElasticsearchClientFactory',
+                "create",
+            ]
         arguments:
-            $dsn: '%search.elasticsearch.dsn%'
+            $dsn: "%search.elasticsearch.dsn%"
 
     Search\Infrastructure\Elasticsearch\ElasticsearchJobSearchIndex:
         arguments:
-            $indexName: '%search.elasticsearch.index_name%'
+            $indexName: "%search.elasticsearch.index_name%"
 
     Search\Infrastructure\Elasticsearch\CreateSearchIndexCommand:
         arguments:
-            $indexName: '%search.elasticsearch.index_name%'
-            $embeddingDimensions: '%search.gemini.dimensions%'
+            $indexName: "%search.elasticsearch.index_name%"
+            $embeddingDimensions: "%search.gemini.dimensions%"
 
     Search\Infrastructure\Gemini\GeminiEmbeddingProvider:
         arguments:
-            $apiKey: '%search.gemini.api_key%'
-            $model: '%search.gemini.model%'
-            $dimensions: '%search.gemini.dimensions%'
+            $apiKey: "%search.gemini.api_key%"
+            $model: "%search.gemini.model%"
+            $dimensions: "%search.gemini.dimensions%"
 
     Search\Domain\JobSearchIndexInterface:
         alias: Search\Infrastructure\Elasticsearch\ElasticsearchJobSearchIndex
@@ -107,13 +112,13 @@ services:
         alias: Search\Infrastructure\Gemini\GeminiEmbeddingProvider
 
     CandidateProfile\:
-        resource: '../src/CandidateProfile/'
+        resource: "../src/CandidateProfile/"
 
     Matching\:
-        resource: '../src/Matching/'
+        resource: "../src/Matching/"
 
     Shared\:
-        resource: '../src/Shared/'
+        resource: "../src/Shared/"
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

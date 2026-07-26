@@ -4,7 +4,7 @@ Drop this folder, plus the root `CLAUDE.md`, into your repository root and commi
 
 ## Layout
 
-```
+```text
 CLAUDE.md                              ← project brief; loaded every session (at repo root)
 .claude/
   settings.json                        ← team permissions (committed)
