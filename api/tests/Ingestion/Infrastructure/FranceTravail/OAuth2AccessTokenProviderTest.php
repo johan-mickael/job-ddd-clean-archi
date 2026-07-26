@@ -16,7 +16,7 @@ final class OAuth2AccessTokenProviderTest extends TestCase
     public function testItReturnsTheTokenFromAWellFormedResponse(): void
     {
         $provider = $this->provider(new MockHttpClient([
-            new MockResponse(\json_encode(['access_token' => 'abc123', 'expires_in' => 1500])),
+            new MockResponse(\json_encode(['access_token' => 'abc123', 'expires_in' => 1500], \JSON_THROW_ON_ERROR)),
         ]));
 
         self::assertSame('abc123', $provider->provideToken()->value);
@@ -25,7 +25,7 @@ final class OAuth2AccessTokenProviderTest extends TestCase
     public function testItReusesTheCachedTokenInsteadOfRequestingATwice(): void
     {
         $httpClient = new MockHttpClient([
-            new MockResponse(\json_encode(['access_token' => 'abc123', 'expires_in' => 1500])),
+            new MockResponse(\json_encode(['access_token' => 'abc123', 'expires_in' => 1500], \JSON_THROW_ON_ERROR)),
         ]);
         $provider = $this->provider($httpClient);
 
@@ -49,7 +49,7 @@ final class OAuth2AccessTokenProviderTest extends TestCase
     public function testItFailsWhenTheResponseIsMissingExpectedFields(): void
     {
         $provider = $this->provider(new MockHttpClient([
-            new MockResponse(\json_encode(['token_type' => 'bearer'])),
+            new MockResponse(\json_encode(['token_type' => 'bearer'], \JSON_THROW_ON_ERROR)),
         ]));
 
         $this->expectException(AccessTokenRequestFailed::class);
@@ -63,11 +63,12 @@ final class OAuth2AccessTokenProviderTest extends TestCase
         $httpClient = new MockHttpClient(function (string $method, string $url, array $options) use (&$sentBody): MockResponse {
             $sentBody = $options['body'];
 
-            return new MockResponse(\json_encode(['access_token' => 'abc123', 'expires_in' => 1500]));
+            return new MockResponse(\json_encode(['access_token' => 'abc123', 'expires_in' => 1500], \JSON_THROW_ON_ERROR));
         });
 
         $this->provider($httpClient)->provideToken();
 
+        self::assertIsString($sentBody);
         self::assertStringContainsString('scope=api_offresdemploiv2+o2dsoffre+application_test-client-id', $sentBody);
     }
 

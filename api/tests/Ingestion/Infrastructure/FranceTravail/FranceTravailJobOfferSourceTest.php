@@ -20,7 +20,7 @@ final class FranceTravailJobOfferSourceTest extends TestCase
             new MockResponse(\json_encode(['resultats' => [
                 $this->rawOffer('168NPMR'),
                 $this->rawOffer('168NPMS'),
-            ]]), ['response_headers' => ['Content-Range' => 'offres 0-1/2']]),
+            ]], \JSON_THROW_ON_ERROR), ['response_headers' => ['Content-Range' => 'offres 0-1/2']]),
         ]);
 
         $offers = \iterator_to_array($this->source($httpClient)->offersPublishedSince(new \DateTimeImmutable('-1 day')));
@@ -33,11 +33,11 @@ final class FranceTravailJobOfferSourceTest extends TestCase
 
     public function testItPaginatesUntilAllResultsAreFetched(): void
     {
-        $firstPage = \array_map(fn (int $i) => $this->rawOffer('OFFER'.$i), \range(0, 149));
+        $firstPage = \array_map(fn(int $i) => $this->rawOffer('OFFER' . $i), \range(0, 149));
 
         $httpClient = new MockHttpClient([
-            new MockResponse(\json_encode(['resultats' => $firstPage]), ['response_headers' => ['Content-Range' => 'offres 0-149/151']]),
-            new MockResponse(\json_encode(['resultats' => [$this->rawOffer('OFFER150')]]), ['response_headers' => ['Content-Range' => 'offres 150-150/151']]),
+            new MockResponse(\json_encode(['resultats' => $firstPage], \JSON_THROW_ON_ERROR), ['response_headers' => ['Content-Range' => 'offres 0-149/151']]),
+            new MockResponse(\json_encode(['resultats' => [$this->rawOffer('OFFER150')]], \JSON_THROW_ON_ERROR), ['response_headers' => ['Content-Range' => 'offres 150-150/151']]),
         ]);
 
         $offers = \iterator_to_array($this->source($httpClient)->offersPublishedSince(new \DateTimeImmutable('-1 day')));
@@ -52,12 +52,13 @@ final class FranceTravailJobOfferSourceTest extends TestCase
         $httpClient = new MockHttpClient(function (string $method, string $url, array $options) use (&$sentOptions): MockResponse {
             $sentOptions = $options;
 
-            return new MockResponse(\json_encode(['resultats' => []]), ['response_headers' => ['Content-Range' => 'offres 0-0/0']]);
+            return new MockResponse(\json_encode(['resultats' => []], \JSON_THROW_ON_ERROR), ['response_headers' => ['Content-Range' => 'offres 0-0/0']]);
         });
 
         \iterator_to_array($this->source($httpClient)->offersPublishedSince(new \DateTimeImmutable('2026-07-01T00:00:00Z')));
 
         self::assertNotNull($sentOptions);
+        /** @var array{headers: list<string>, query: array<string, string>} $sentOptions */
         self::assertContains('Authorization: Bearer fixed-token', $sentOptions['headers']);
         self::assertSame('0-149', $sentOptions['query']['range']);
         self::assertSame('2026-07-01T00:00:00Z', $sentOptions['query']['minCreationDate']);
@@ -69,13 +70,14 @@ final class FranceTravailJobOfferSourceTest extends TestCase
         $httpClient = new MockHttpClient(function (string $method, string $url, array $options) use (&$sentOptions): MockResponse {
             $sentOptions = $options;
 
-            return new MockResponse(\json_encode(['resultats' => []]), ['response_headers' => ['Content-Range' => 'offres 0-0/0']]);
+            return new MockResponse(\json_encode(['resultats' => []], \JSON_THROW_ON_ERROR), ['response_headers' => ['Content-Range' => 'offres 0-0/0']]);
         });
         $criteria = new SearchCriteria(keywords: 'développeur php', romeCodes: ['M1805'], commune: '69383', distanceKm: 20);
 
         \iterator_to_array($this->source($httpClient, $criteria)->offersPublishedSince(new \DateTimeImmutable('-1 day')));
 
         self::assertNotNull($sentOptions);
+        /** @var array{query: array<string, string>} $sentOptions */
         self::assertSame('développeur php', $sentOptions['query']['motsCles']);
         self::assertSame('M1805', $sentOptions['query']['codeROME']);
         self::assertSame('69383', $sentOptions['query']['commune']);
@@ -116,7 +118,7 @@ final class FranceTravailJobOfferSourceTest extends TestCase
             'typeContrat' => 'CDI',
             'dateCreation' => '2026-07-01T08:00:00.000Z',
             'entreprise' => ['nom' => 'Acme Corp'],
-            'origineOffre' => ['urlOrigine' => 'https://candidat.francetravail.fr/offres/recherche/detail/'.$id],
+            'origineOffre' => ['urlOrigine' => 'https://candidat.francetravail.fr/offres/recherche/detail/' . $id],
         ];
     }
 }

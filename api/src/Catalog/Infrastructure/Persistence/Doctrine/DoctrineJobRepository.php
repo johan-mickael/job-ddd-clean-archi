@@ -15,8 +15,7 @@ final class DoctrineJobRepository implements JobRepositoryInterface
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly JobMapper $mapper,
-    ) {
-    }
+    ) {}
 
     public function ofId(JobId $id): Job
     {
@@ -48,6 +47,10 @@ final class DoctrineJobRepository implements JobRepositoryInterface
             ->getQuery()
             ->getSingleColumnResult();
 
-        return \array_map(static fn (string $id): JobId => new JobId($id), $ids);
+        return \array_values(\array_map(static function (mixed $id): JobId {
+            \assert(\is_string($id));
+
+            return new JobId($id);
+        }, $ids));
     }
 }

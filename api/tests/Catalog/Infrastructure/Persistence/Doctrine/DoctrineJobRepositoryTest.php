@@ -28,9 +28,11 @@ final class DoctrineJobRepositoryTest extends KernelTestCase
     protected function setUp(): void
     {
         self::bootKernel();
-        $this->entityManager = self::getContainer()->get(EntityManagerInterface::class);
+        $entityManager = self::getContainer()->get(EntityManagerInterface::class);
+        \assert($entityManager instanceof EntityManagerInterface);
+        $this->entityManager = $entityManager;
         $this->repository = new DoctrineJobRepository($this->entityManager, new JobMapper());
-        $this->entityManager->createQuery('DELETE FROM '.JobEntity::class)->execute();
+        $this->entityManager->createQuery('DELETE FROM ' . JobEntity::class)->execute();
     }
 
     public function testANewlyAddedJobCanBeReadBackByIdWithFullDetails(): void
@@ -74,7 +76,7 @@ final class DoctrineJobRepositoryTest extends KernelTestCase
 
         self::assertSame('Développeur PHP Lead', $this->repository->ofId(new JobId('168NPMR'))->title);
 
-        $count = $this->entityManager->createQuery('SELECT COUNT(entity.id) FROM '.JobEntity::class.' entity')->getSingleScalarResult();
+        $count = $this->entityManager->createQuery('SELECT COUNT(entity.id) FROM ' . JobEntity::class . ' entity')->getSingleScalarResult();
         self::assertSame(1, (int) $count);
     }
 
@@ -95,7 +97,7 @@ final class DoctrineJobRepositoryTest extends KernelTestCase
         $expiredJob->expire();
         $this->repository->add($expiredJob);
 
-        $ids = \array_map(static fn (JobId $id): string => $id->value, $this->repository->publishedJobIds());
+        $ids = \array_map(static fn(JobId $id): string => $id->value, $this->repository->publishedJobIds());
 
         self::assertContains('168NPMR', $ids);
         self::assertNotContains('168EXPR', $ids);

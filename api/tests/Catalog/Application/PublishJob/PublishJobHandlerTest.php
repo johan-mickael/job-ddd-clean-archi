@@ -58,8 +58,10 @@ final class PublishJobHandlerTest extends TestCase
 
         $details = $jobs->ofId(new JobId('168NPMR'))->details;
 
-        self::assertSame('Lyon - 69003', $details->location?->label);
-        self::assertSame('69383', $details->location?->inseeCode);
+        $location = $details->location;
+        self::assertNotNull($location);
+        self::assertSame('Lyon - 69003', $location->label);
+        self::assertSame('69383', $location->inseeCode);
         self::assertSame('M1805', $details->romeCode?->value);
         self::assertSame(ExperienceRequirement::Required, $details->experienceRequirement);
         self::assertTrue($details->isWorkStudy);
