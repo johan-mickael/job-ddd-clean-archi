@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Ingestion\Application\SyncJobOffers;
 
 use Catalog\Application\PublishJob\PublishJob;
-use Catalog\Application\PublishJob\PublishJobHandler;
+use Catalog\Application\PublishJob\PublishJobHandlerInterface;
 use Catalog\Application\PublishJob\PublishJobSkill;
 use Ingestion\Domain\IncomingJobOffer;
 use Ingestion\Domain\IncomingJobSkill;
@@ -15,7 +15,7 @@ final class SyncJobOffersHandler
 {
     public function __construct(
         private readonly JobOfferSource $source,
-        private readonly PublishJobHandler $publishJob,
+        private readonly PublishJobHandlerInterface $publishJob,
     ) {
     }
 

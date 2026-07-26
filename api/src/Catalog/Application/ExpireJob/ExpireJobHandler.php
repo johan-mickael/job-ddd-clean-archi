@@ -7,7 +7,7 @@ namespace Catalog\Application\ExpireJob;
 use Catalog\Domain\JobId;
 use Catalog\Domain\JobRepositoryInterface;
 
-final class ExpireJobHandler
+final class ExpireJobHandler implements ExpireJobHandlerInterface
 {
     public function __construct(private readonly JobRepositoryInterface $jobs)
     {

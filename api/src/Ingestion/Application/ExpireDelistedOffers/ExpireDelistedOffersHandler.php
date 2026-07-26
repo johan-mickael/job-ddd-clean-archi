@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace Ingestion\Application\ExpireDelistedOffers;
 
 use Catalog\Application\ExpireJob\ExpireJob;
-use Catalog\Application\ExpireJob\ExpireJobHandler;
-use Catalog\Application\ListPublishedJobIds\ListPublishedJobIdsHandler;
+use Catalog\Application\ExpireJob\ExpireJobHandlerInterface;
+use Catalog\Application\ListPublishedJobIds\ListPublishedJobIdsHandlerInterface;
 
 // License §7.2: offers absent from a sync pass must be expired, every sync -
 // this is what keeps our copy from showing offers France Travail has delisted.
 final class ExpireDelistedOffersHandler
 {
     public function __construct(
-        private readonly ListPublishedJobIdsHandler $listPublishedJobIds,
-        private readonly ExpireJobHandler $expireJob,
+        private readonly ListPublishedJobIdsHandlerInterface $listPublishedJobIds,
+        private readonly ExpireJobHandlerInterface $expireJob,
     ) {
     }
 

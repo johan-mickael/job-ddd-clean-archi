@@ -7,7 +7,7 @@ namespace Catalog\Application\ListPublishedJobIds;
 use Catalog\Domain\JobId;
 use Catalog\Domain\JobRepositoryInterface;
 
-final class ListPublishedJobIdsHandler
+final class ListPublishedJobIdsHandler implements ListPublishedJobIdsHandlerInterface
 {
     public function __construct(private readonly JobRepositoryInterface $jobs)
     {

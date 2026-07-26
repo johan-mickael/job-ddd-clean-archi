@@ -57,6 +57,15 @@ services:
     Catalog\Domain\JobRepositoryInterface:
         alias: Catalog\Infrastructure\Persistence\Doctrine\DoctrineJobRepository
 
+    Catalog\Application\PublishJob\PublishJobHandlerInterface:
+        alias: Catalog\Application\PublishJob\PublishJobHandler
+
+    Catalog\Application\ExpireJob\ExpireJobHandlerInterface:
+        alias: Catalog\Application\ExpireJob\ExpireJobHandler
+
+    Catalog\Application\ListPublishedJobIds\ListPublishedJobIdsHandlerInterface:
+        alias: Catalog\Application\ListPublishedJobIds\ListPublishedJobIdsHandler
+
     Search\:
         resource: '../src/Search/'
 

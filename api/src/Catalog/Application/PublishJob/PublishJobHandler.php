@@ -17,7 +17,7 @@ use Catalog\Domain\WorkLocation;
 use Shared\Domain\RomeCode;
 use Shared\Domain\RomeCompetencyCode;
 
-final class PublishJobHandler
+final class PublishJobHandler implements PublishJobHandlerInterface
 {
     public function __construct(private readonly JobRepositoryInterface $jobs)
     {
