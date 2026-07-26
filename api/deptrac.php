@@ -24,6 +24,7 @@ return static function (DeptracConfig $config): void {
     $domains = [];
     $applications = [];
     $infrastructures = [];
+    $presentations = [];
 
     foreach ($contexts as $context) {
         $domains[$context] = Layer::withName($context . 'Domain')->collectors(
@@ -35,13 +36,22 @@ return static function (DeptracConfig $config): void {
         $infrastructures[$context] = Layer::withName($context . 'Infrastructure')->collectors(
             ClassNameRegexConfig::create('#^' . $context . '\\Infrastructure\\#'),
         );
+        $presentations[$context] = Layer::withName($context . 'Presentation')->collectors(
+            ClassNameRegexConfig::create('#^' . $context . '\\Presentation\\#'),
+        );
     }
 
     $shared = Layer::withName('Shared')->collectors(
         ClassNameRegexConfig::create('#^Shared\\#'),
     );
 
-    $config->layers(...[...\array_values($domains), ...\array_values($applications), ...\array_values($infrastructures), $shared]);
+    $config->layers(...[
+        ...\array_values($domains),
+        ...\array_values($applications),
+        ...\array_values($infrastructures),
+        ...\array_values($presentations),
+        $shared,
+    ]);
 
     $rulesets = [];
 
@@ -62,6 +72,15 @@ return static function (DeptracConfig $config): void {
         $rulesets[] = Ruleset::forLayer($infrastructures[$context])->accesses(
             $domains[$context],
             $applications[$context],
+            $shared,
+        );
+
+        // Presentation depends on its own Application (Commands, Queries,
+        // Results) and Domain, plus the shared kernel - it never reaches
+        // Infrastructure or another context directly.
+        $rulesets[] = Ruleset::forLayer($presentations[$context])->accesses(
+            $applications[$context],
+            $domains[$context],
             $shared,
         );
     }
