@@ -12,6 +12,9 @@
         "doctrine/doctrine-bundle": "^3.3",
         "doctrine/doctrine-migrations-bundle": "^4.0",
         "doctrine/orm": "^3.6",
+        "elasticsearch/elasticsearch": "^9.4",
+        "nyholm/psr7": "^1.8",
+        "symfony/amqp-messenger": "8.1.*",
         "symfony/cache": "8.1.*",
         "symfony/console": "8.1.*",
         "symfony/dotenv": "8.1.*",
@@ -19,6 +22,7 @@
         "symfony/framework-bundle": "8.1.*",
         "symfony/http-client": "8.1.*",
         "symfony/messenger": "8.1.*",
+        "symfony/psr-http-message-bridge": "8.1.*",
         "symfony/runtime": "8.1.*",
         "symfony/scheduler": "8.1.*",
         "symfony/yaml": "8.1.*"
