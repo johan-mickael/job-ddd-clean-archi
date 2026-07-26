@@ -12,17 +12,24 @@ withDefaults(defineProps<{ wide?: boolean }>(), { wide: false })
       class="relative mx-auto flex min-h-svh flex-col px-6 py-16"
       :class="wide ? 'max-w-3xl' : 'max-w-2xl'"
     >
-      <RouterLink
-        :to="{ name: 'search' }"
-        class="mb-10 flex w-fit items-center gap-2.5"
-      >
-        <span class="flex size-6 items-center justify-center rounded-md bg-signal/15 text-signal">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" /></svg>
-        </span>
-        <span class="font-heading text-sm font-medium tracking-tight text-foreground">
-          semantic<span class="text-muted-foreground">/jobs</span>
-        </span>
-      </RouterLink>
+      <div class="mb-10 flex items-center justify-between">
+        <RouterLink :to="{ name: 'search' }" class="flex w-fit items-center gap-2.5">
+          <span class="flex size-6 items-center justify-center rounded-md bg-signal/15 text-signal">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" /></svg>
+          </span>
+          <span class="font-heading text-sm font-medium tracking-tight text-foreground">
+            semantic<span class="text-muted-foreground">/jobs</span>
+          </span>
+        </RouterLink>
+
+        <RouterLink
+          :to="{ name: 'upload-cv' }"
+          class="flex items-center gap-1.5 rounded-full border border-white/10 px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-signal/40 hover:text-foreground"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5"><path d="M14 2v6h6" /><path d="M4 22V4a2 2 0 0 1 2-2h9l5 5v15a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z" /></svg>
+          Match my CV
+        </RouterLink>
+      </div>
 
       <div class="flex-1">
         <slot />
