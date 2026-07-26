@@ -21,6 +21,10 @@ parameters:
     search.gemini.api_key: "%env(EMBEDDING_API_KEY)%"
     search.gemini.model: "%env(EMBEDDING_MODEL)%"
     search.gemini.dimensions: "%env(int:EMBEDDING_DIMENSIONS)%"
+    # Same Gemini key as embeddings (EMBEDDING_API_KEY) - structured
+    # extraction is a generation call, not an embedding call, so it needs
+    # its own model name, but not a separate credential.
+    candidate_profile.gemini.model: "%env(LLM_MODEL)%"
 
 services:
     # default configuration for services in *this* file
@@ -117,6 +121,29 @@ services:
 
     CandidateProfile\:
         resource: "../src/CandidateProfile/"
+
+    CandidateProfile\Domain\CandidateProfileRepositoryInterface:
+        alias: CandidateProfile\Infrastructure\Persistence\Doctrine\DoctrineCandidateProfileRepository
+
+    CandidateProfile\Domain\TextExtractorInterface:
+        alias: CandidateProfile\Infrastructure\TextExtraction\DocumentTextExtractor
+
+    CandidateProfile\Domain\CandidateProfileIdGeneratorInterface:
+        alias: CandidateProfile\Infrastructure\Uid\SymfonyCandidateProfileIdGenerator
+
+    CandidateProfile\Infrastructure\Gemini\GeminiCvProfileExtractor:
+        arguments:
+            $apiKey: "%search.gemini.api_key%"
+            $model: "%candidate_profile.gemini.model%"
+
+    CandidateProfile\Domain\CvProfileExtractorInterface:
+        alias: CandidateProfile\Infrastructure\Gemini\GeminiCvProfileExtractor
+
+    CandidateProfile\Application\UploadCv\UploadCvHandlerInterface:
+        alias: CandidateProfile\Application\UploadCv\UploadCvHandler
+
+    CandidateProfile\Application\GetCandidateProfile\GetCandidateProfileHandlerInterface:
+        alias: CandidateProfile\Application\GetCandidateProfile\GetCandidateProfileHandler
 
     Matching\:
         resource: "../src/Matching/"

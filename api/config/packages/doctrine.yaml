@@ -20,6 +20,12 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Catalog/Infrastructure/Persistence/Doctrine'
                 prefix: 'Catalog\Infrastructure\Persistence\Doctrine'
                 alias: Catalog
+            CandidateProfile:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/CandidateProfile/Infrastructure/Persistence/Doctrine'
+                prefix: 'CandidateProfile\Infrastructure\Persistence\Doctrine'
+                alias: CandidateProfile
 
 when@test:
     doctrine:

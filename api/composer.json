@@ -14,6 +14,8 @@
         "doctrine/orm": "^3.6",
         "elasticsearch/elasticsearch": "^8.19",
         "nyholm/psr7": "^1.8",
+        "phpoffice/phpword": "^1.1",
+        "smalot/pdfparser": "^2.12",
         "symfony/amqp-messenger": "8.1.*",
         "symfony/cache": "8.1.*",
         "symfony/console": "8.1.*",
@@ -25,6 +27,7 @@
         "symfony/psr-http-message-bridge": "8.1.*",
         "symfony/runtime": "8.1.*",
         "symfony/scheduler": "8.1.*",
+        "symfony/uid": "8.1.*",
         "symfony/yaml": "8.1.*"
     },
     "config": {
