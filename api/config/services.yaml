@@ -7,6 +7,10 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    ingestion.france_travail.token_url: '%env(FT_TOKEN_URL)%'
+    ingestion.france_travail.client_id: '%env(FT_CLIENT_ID)%'
+    ingestion.france_travail.client_secret: '%env(FT_CLIENT_SECRET)%'
+    ingestion.france_travail.scope: '%env(FT_SCOPE)%'
 
 services:
     # default configuration for services in *this* file
@@ -19,6 +23,16 @@ services:
     # holds only the Kernel and is intentionally not autowired as a service.
     Ingestion\:
         resource: '../src/Ingestion/'
+
+    Ingestion\Infrastructure\FranceTravail\OAuth2AccessTokenProvider:
+        arguments:
+            $tokenUrl: '%ingestion.france_travail.token_url%'
+            $clientId: '%ingestion.france_travail.client_id%'
+            $clientSecret: '%ingestion.france_travail.client_secret%'
+            $scope: '%ingestion.france_travail.scope%'
+
+    Ingestion\Infrastructure\FranceTravail\AccessTokenProvider:
+        alias: Ingestion\Infrastructure\FranceTravail\OAuth2AccessTokenProvider
 
     Catalog\:
         resource: '../src/Catalog/'
