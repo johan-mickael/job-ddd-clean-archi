@@ -1,4 +1,8 @@
 {
-  "ignore": ["**/vendor/**", "**/node_modules/**", "**/api/config/reference.php"],
+  "ignore": [
+    "**/vendor/**",
+    "**/node_modules/**",
+    "**/api/config/reference.php"
+  ],
   "minTokens": 70
 }

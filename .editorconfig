@@ -20,7 +20,10 @@ indent_style = tab
 [*.sh]
 indent_style = tab
 
-[{compose.*yaml,.devcontainer/compose.*yaml,.github/**/*.yaml}]
+[{compose.*yaml,.devcontainer/compose.*yaml,.github/**/*.yaml,.yamllint.yml}]
+indent_size = 2
+
+[.github/linters/*.toml]
 indent_size = 2
 
 [*.json]
