@@ -63,7 +63,7 @@ Non-negotiable headlines (the skill carries the detail):
 
 **Do NOT add** LangChain/LlamaIndex-style orchestration frameworks. The two or three LLM calls are hand-rolled as clean Application-layer services — this reads better and stays explainable.
 
-**Elasticsearch licensing constraint:** on the free self-hosted Basic license, **ELSER is unavailable**. We generate our own embeddings and use a `dense_vector` field with kNN, fused with BM25 via an **RRF retriever**. Do not design around ELSER.
+**Elasticsearch licensing constraint:** on the free self-hosted Basic license, **ELSER is unavailable**, and so is the **`retriever.rrf` framework** (verified: it 403s with "current license is non-compliant" even under `xpack.license.self_generated.type: basic`). We generate our own embeddings, store them in a `dense_vector` field, and run BM25 (`multi_match`) and kNN as two plain Basic-legal searches, fusing their rankings with the RRF *formula* ourselves in PHP (`Search\Infrastructure\Elasticsearch\ReciprocalRankFusion`) rather than via ES's retriever API. Do not design around ELSER, and do not reach for `retriever.rrf`.
 
 ---
 
@@ -153,7 +153,7 @@ Do not build or maintain a skill keyword dictionary. The LLM + ROME referential 
 
 ## 9. Search & Matching
 
-- **Hybrid retrieval:** BM25 (lexical) + kNN over `dense_vector` (semantic), fused with an **RRF retriever**. Pure semantic alone misses exact tokens (specific skills, certs); pure lexical misses paraphrase. Hybrid is the default.
+- **Hybrid retrieval:** BM25 (lexical) + kNN over `dense_vector` (semantic), fused with **RRF** (application-level — see §3's licensing note). Pure semantic alone misses exact tokens (specific skills, certs); pure lexical misses paraphrase. Hybrid is the default.
 - **Own embeddings:** generate at ingest, store in ES. Re-embed only when the job description actually changed (embeddings cost time/money — never regenerate blindly).
 - **Natural-language search:** LLM turns the user's phrase into structured filters + a semantic query, which the Search context executes.
 - **Match explanation (the only RAG feature):** retrieve job + candidate profile → LLM explains skill-by-skill overlap and **honestly flags gaps** ("missing Kubernetes, required by most matches"), grounded in ROME codes and the actual job text. Must not invent requirements not present in the source.

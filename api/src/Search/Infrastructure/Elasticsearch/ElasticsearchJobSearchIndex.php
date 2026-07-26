@@ -16,8 +16,12 @@ use Search\Domain\SearchResultItem;
 
 final class ElasticsearchJobSearchIndex implements JobSearchIndexInterface
 {
+    private const int RANK_WINDOW_SIZE = 50;
+    private const int RESULT_SIZE = 20;
+
     public function __construct(
         private readonly Client $client,
+        private readonly ReciprocalRankFusion $rankFusion,
         private readonly string $indexName,
     ) {}
 
@@ -72,16 +76,34 @@ final class ElasticsearchJobSearchIndex implements JobSearchIndexInterface
     public function search(SearchQuery $query, array $queryEmbedding): array
     {
         try {
-            /** @var array{hits?: array{hits?: list<array{_score: float, _source: array{jobId: string, title: string, companyName: string, locationLabel?: ?string, applyUrl: string}}>}} $response */
-            $response = $this->toArray($this->client->search([
+            $lexicalHits = $this->hits($this->client->search([
                 'index' => $this->indexName,
-                'body' => $this->searchBody($query, $queryEmbedding),
+                'body' => $this->lexicalBody($query),
+            ]));
+            $semanticHits = $this->hits($this->client->search([
+                'index' => $this->indexName,
+                'body' => $this->semanticBody($query, $queryEmbedding),
             ]));
         } catch (\Throwable $e) {
             throw JobSearchIndexUnavailable::dueTo($e);
         }
 
-        return \array_map($this->toResultItem(...), $response['hits']['hits'] ?? []);
+        $sourceById = [];
+        foreach ([...$lexicalHits, ...$semanticHits] as $hit) {
+            $sourceById[$hit['_id']] = $hit['_source'];
+        }
+
+        $fusedScores = $this->rankFusion->fuse([
+            \array_column($lexicalHits, '_id'),
+            \array_column($semanticHits, '_id'),
+        ]);
+
+        $results = [];
+        foreach (\array_slice($fusedScores, 0, self::RESULT_SIZE, true) as $id => $score) {
+            $results[] = $this->toResultItem($sourceById[$id], $score);
+        }
+
+        return $results;
     }
 
     /**
@@ -145,48 +167,44 @@ final class ElasticsearchJobSearchIndex implements JobSearchIndexInterface
     }
 
     /**
+     * @return array<string, mixed>
+     */
+    private function lexicalBody(SearchQuery $query): array
+    {
+        return [
+            'query' => [
+                'bool' => [
+                    'must' => [
+                        'multi_match' => [
+                            'query' => $query->freeText,
+                            'fields' => ['title^2', 'description', 'companyName', 'skillLabels'],
+                        ],
+                    ],
+                    'filter' => $this->filters($query),
+                ],
+            ],
+            'size' => self::RANK_WINDOW_SIZE,
+            '_source' => ['jobId', 'title', 'companyName', 'locationLabel', 'applyUrl'],
+        ];
+    }
+
+    /**
      * @param list<float> $queryEmbedding
      *
      * @return array<string, mixed>
      */
-    private function searchBody(SearchQuery $query, array $queryEmbedding): array
+    private function semanticBody(SearchQuery $query, array $queryEmbedding): array
     {
-        $filters = $this->filters($query);
-
         return [
-            'retriever' => [
-                'rrf' => [
-                    'retrievers' => [
-                        [
-                            'standard' => [
-                                'query' => [
-                                    'bool' => [
-                                        'must' => [
-                                            'multi_match' => [
-                                                'query' => $query->freeText,
-                                                'fields' => ['title^2', 'description', 'companyName', 'skillLabels'],
-                                            ],
-                                        ],
-                                        'filter' => $filters,
-                                    ],
-                                ],
-                            ],
-                        ],
-                        [
-                            'knn' => [
-                                'field' => 'embedding',
-                                'query_vector' => $queryEmbedding,
-                                'k' => 50,
-                                'num_candidates' => 200,
-                                'filter' => ['bool' => ['filter' => $filters]],
-                            ],
-                        ],
-                    ],
-                    'rank_window_size' => 50,
-                    'rank_constant' => 60,
-                ],
+            'knn' => [
+                'field' => 'embedding',
+                'query_vector' => $queryEmbedding,
+                'k' => self::RANK_WINDOW_SIZE,
+                'num_candidates' => 200,
+                'filter' => ['bool' => ['filter' => $this->filters($query)]],
             ],
-            'size' => 20,
+            'size' => self::RANK_WINDOW_SIZE,
+            '_source' => ['jobId', 'title', 'companyName', 'locationLabel', 'applyUrl'],
         ];
     }
 
@@ -209,19 +227,28 @@ final class ElasticsearchJobSearchIndex implements JobSearchIndexInterface
     }
 
     /**
-     * @param array{_score: float, _source: array{jobId: string, title: string, companyName: string, locationLabel?: ?string, applyUrl: string}} $hit
+     * @return list<array{_id: string, _source: array{jobId: string, title: string, companyName: string, locationLabel?: ?string, applyUrl: string}}>
      */
-    private function toResultItem(array $hit): SearchResultItem
+    private function hits(Elasticsearch|Promise $response): array
     {
-        $source = $hit['_source'];
+        /** @var array{hits?: array{hits?: list<array{_id: string, _source: array{jobId: string, title: string, companyName: string, locationLabel?: ?string, applyUrl: string}}>}} $body */
+        $body = $this->toArray($response);
 
+        return $body['hits']['hits'] ?? [];
+    }
+
+    /**
+     * @param array{jobId: string, title: string, companyName: string, locationLabel?: ?string, applyUrl: string} $source
+     */
+    private function toResultItem(array $source, float $score): SearchResultItem
+    {
         return new SearchResultItem(
             jobId: $source['jobId'],
             title: $source['title'],
             companyName: $source['companyName'],
             locationLabel: $source['locationLabel'] ?? null,
             applyUrl: $source['applyUrl'],
-            score: $hit['_score'],
+            score: $score,
         );
     }
 }
