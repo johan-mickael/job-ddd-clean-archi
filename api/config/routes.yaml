@@ -9,3 +9,10 @@
 
 controllers:
     resource: routing.controllers
+
+# json_login's check_path intercepts this before any controller runs (see
+# security.yaml's "login" firewall) - the route still has to exist, or
+# Symfony's router 404s the request before Security ever gets a look at it.
+api_login:
+    path: /api/login
+    methods: [POST]

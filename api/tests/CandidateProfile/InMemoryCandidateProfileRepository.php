@@ -23,4 +23,12 @@ final class InMemoryCandidateProfileRepository implements CandidateProfileReposi
     {
         $this->profiles[$profile->id->value] = $profile;
     }
+
+    public function ofOwnerId(string $ownerId): array
+    {
+        return \array_values(\array_filter(
+            $this->profiles,
+            static fn(CandidateProfile $profile): bool => $profile->ownerId === $ownerId,
+        ));
+    }
 }

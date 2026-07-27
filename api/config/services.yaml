@@ -119,6 +119,9 @@ services:
     Search\Domain\EmbeddingProviderInterface:
         alias: Search\Infrastructure\Cache\CachingEmbeddingProvider
 
+    Search\Application\SearchJobs\SearchJobsHandlerInterface:
+        alias: Search\Application\SearchJobs\SearchJobsHandler
+
     CandidateProfile\:
         resource: "../src/CandidateProfile/"
 
@@ -145,8 +148,32 @@ services:
     CandidateProfile\Application\GetCandidateProfile\GetCandidateProfileHandlerInterface:
         alias: CandidateProfile\Application\GetCandidateProfile\GetCandidateProfileHandler
 
+    CandidateProfile\Application\ListMyCandidateProfiles\ListMyCandidateProfilesHandlerInterface:
+        alias: CandidateProfile\Application\ListMyCandidateProfiles\ListMyCandidateProfilesHandler
+
     Matching\:
         resource: "../src/Matching/"
+
+    Matching\Application\MatchJobsToProfile\MatchJobsToProfileHandlerInterface:
+        alias: Matching\Application\MatchJobsToProfile\MatchJobsToProfileHandler
+
+    Identity\:
+        resource: "../src/Identity/"
+
+    Identity\Domain\UserRepositoryInterface:
+        alias: Identity\Infrastructure\Persistence\Doctrine\DoctrineUserRepository
+
+    Identity\Domain\PasswordHasherInterface:
+        alias: Identity\Infrastructure\Security\SymfonyPasswordHasher
+
+    Identity\Domain\UserIdGeneratorInterface:
+        alias: Identity\Infrastructure\Uid\SymfonyUserIdGenerator
+
+    Identity\Application\RegisterUser\RegisterUserHandlerInterface:
+        alias: Identity\Application\RegisterUser\RegisterUserHandler
+
+    Shared\Domain\CurrentUserIdProviderInterface:
+        alias: Identity\Infrastructure\Security\SymfonyCurrentUserIdProvider
 
     Shared\:
         resource: "../src/Shared/"

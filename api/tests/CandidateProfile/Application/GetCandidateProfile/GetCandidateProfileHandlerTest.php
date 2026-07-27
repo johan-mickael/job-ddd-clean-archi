@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\CandidateProfile\Application\GetCandidateProfile;
 
+use CandidateProfile\Application\GetCandidateProfile\CandidateProfileViewMapper;
 use CandidateProfile\Application\GetCandidateProfile\GetCandidateProfile;
 use CandidateProfile\Application\GetCandidateProfile\GetCandidateProfileHandler;
 use CandidateProfile\Domain\CandidateLanguage;
@@ -23,6 +24,7 @@ final class GetCandidateProfileHandlerTest extends TestCase
         $profiles = new InMemoryCandidateProfileRepository();
         $profiles->add(CandidateProfile::extractedFrom(
             new CandidateProfileId('0198a1b2-0000-7000-8000-000000000001'),
+            'owner-1',
             'cv.pdf',
             new \DateTimeImmutable('2026-07-26'),
             SeniorityLevel::Senior,
@@ -31,9 +33,9 @@ final class GetCandidateProfileHandlerTest extends TestCase
             [new CandidateLanguage('French', LanguageProficiency::Native)],
             [new CandidateSkill('PHP', 5)],
         ));
-        $handler = new GetCandidateProfileHandler($profiles);
+        $handler = new GetCandidateProfileHandler($profiles, new CandidateProfileViewMapper());
 
-        $view = $handler(new GetCandidateProfile('0198a1b2-0000-7000-8000-000000000001'));
+        $view = $handler(new GetCandidateProfile('0198a1b2-0000-7000-8000-000000000001', 'owner-1'));
 
         self::assertSame('senior', $view->seniority);
         self::assertSame(['backend'], $view->domains);
@@ -43,10 +45,10 @@ final class GetCandidateProfileHandlerTest extends TestCase
 
     public function testItThrowsWhenTheProfileDoesNotExist(): void
     {
-        $handler = new GetCandidateProfileHandler(new InMemoryCandidateProfileRepository());
+        $handler = new GetCandidateProfileHandler(new InMemoryCandidateProfileRepository(), new CandidateProfileViewMapper());
 
         $this->expectException(CandidateProfileNotFound::class);
 
-        $handler(new GetCandidateProfile('0198a1b2-0000-7000-8000-000000000099'));
+        $handler(new GetCandidateProfile('0198a1b2-0000-7000-8000-000000000099', 'owner-1'));
     }
 }

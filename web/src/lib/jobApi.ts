@@ -1,3 +1,5 @@
+import { apiFetch } from '@/lib/apiFetch'
+
 export interface JobSkill {
   label: string
   romeCompetencyCode: string | null
@@ -46,7 +48,7 @@ export class JobNotFoundError extends Error {
 export async function fetchJob(jobId: string, signal?: AbortSignal): Promise<JobDetail> {
   let response: Response
   try {
-    response = await fetch(`/api/jobs/${encodeURIComponent(jobId)}`, { signal })
+    response = await apiFetch(`/api/jobs/${encodeURIComponent(jobId)}`, { signal })
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') throw error
     throw new JobUnavailableError(error)

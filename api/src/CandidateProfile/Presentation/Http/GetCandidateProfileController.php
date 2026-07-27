@@ -10,18 +10,22 @@ use CandidateProfile\Application\GetCandidateProfile\CandidateProfileView;
 use CandidateProfile\Application\GetCandidateProfile\GetCandidateProfile;
 use CandidateProfile\Application\GetCandidateProfile\GetCandidateProfileHandlerInterface;
 use CandidateProfile\Domain\Exception\CandidateProfileNotFound;
+use Shared\Domain\CurrentUserIdProviderInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class GetCandidateProfileController
 {
-    public function __construct(private readonly GetCandidateProfileHandlerInterface $getCandidateProfile) {}
+    public function __construct(
+        private readonly GetCandidateProfileHandlerInterface $getCandidateProfile,
+        private readonly CurrentUserIdProviderInterface $currentUserId,
+    ) {}
 
     #[Route('/api/cv/{candidateProfileId}', name: 'candidate_profile_detail', methods: ['GET'])]
     public function __invoke(string $candidateProfileId): JsonResponse
     {
         try {
-            $view = ($this->getCandidateProfile)(new GetCandidateProfile($candidateProfileId));
+            $view = ($this->getCandidateProfile)(new GetCandidateProfile($candidateProfileId, $this->currentUserId->id()));
         } catch (CandidateProfileNotFound) {
             return new JsonResponse(['error' => 'Candidate profile not found.'], 404);
         }

@@ -26,11 +26,13 @@ final class ExtractedCvProfileMapper
     public function toCandidateProfile(
         array $raw,
         CandidateProfileId $id,
+        string $ownerId,
         string $sourceFileName,
         \DateTimeImmutable $extractedAt,
     ): CandidateProfile {
         return CandidateProfile::extractedFrom(
             id: $id,
+            ownerId: $ownerId,
             sourceFileName: $sourceFileName,
             extractedAt: $extractedAt,
             seniority: $this->seniority($raw),

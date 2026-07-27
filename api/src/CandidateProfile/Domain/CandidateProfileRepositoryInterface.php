@@ -13,5 +13,10 @@ interface CandidateProfileRepositoryInterface
      */
     public function ofId(CandidateProfileId $id): CandidateProfile;
 
+    /**
+     * @return list<CandidateProfile>
+     */
+    public function ofOwnerId(string $ownerId): array;
+
     public function add(CandidateProfile $profile): void;
 }

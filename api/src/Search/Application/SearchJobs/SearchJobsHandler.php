@@ -9,7 +9,7 @@ use Search\Domain\JobSearchIndexInterface;
 use Search\Domain\SearchQuery;
 use Search\Domain\SearchResults;
 
-final class SearchJobsHandler
+final class SearchJobsHandler implements SearchJobsHandlerInterface
 {
     public function __construct(
         private readonly JobSearchIndexInterface $index,

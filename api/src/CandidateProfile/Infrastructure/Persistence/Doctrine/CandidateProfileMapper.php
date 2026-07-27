@@ -26,6 +26,7 @@ final class CandidateProfileMapper
     {
         return CandidateProfile::extractedFrom(
             id: new CandidateProfileId($entity->id),
+            ownerId: $entity->ownerId,
             sourceFileName: $entity->sourceFileName,
             extractedAt: $entity->extractedAt,
             seniority: SeniorityLevel::from($entity->seniority),
@@ -38,6 +39,7 @@ final class CandidateProfileMapper
 
     private function fill(CandidateProfileEntity $entity, CandidateProfile $profile): void
     {
+        $entity->ownerId = $profile->ownerId;
         $entity->sourceFileName = $profile->sourceFileName;
         $entity->extractedAt = $profile->extractedAt;
         $entity->seniority = $profile->seniority->value;

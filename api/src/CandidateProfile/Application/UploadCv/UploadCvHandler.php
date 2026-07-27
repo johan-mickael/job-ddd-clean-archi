@@ -26,7 +26,7 @@ final class UploadCvHandler implements UploadCvHandlerInterface
         $raw = $this->profileExtractor->extract($text);
 
         $id = $this->idGenerator->next();
-        $profile = $this->mapper->toCandidateProfile($raw, $id, $command->fileName, new \DateTimeImmutable());
+        $profile = $this->mapper->toCandidateProfile($raw, $id, $command->ownerId, $command->fileName, new \DateTimeImmutable());
 
         $this->profiles->add($profile);
 

@@ -19,7 +19,7 @@ return static function (DeptracConfig $config): void {
     // Application layer (the published entry points/ports), never its
     // Domain or Infrastructure - that's the rule that keeps this a real
     // bounded-context architecture instead of a monolith with subfolders.
-    $contexts = ['Catalog', 'Ingestion', 'Search', 'CandidateProfile', 'Matching'];
+    $contexts = ['Catalog', 'Ingestion', 'Search', 'CandidateProfile', 'Matching', 'Identity'];
 
     $domains = [];
     $applications = [];

@@ -29,7 +29,7 @@ final class UploadCvHandlerTest extends TestCase
             $profiles,
         );
 
-        $returnedId = $handler(new UploadCv('%PDF-1.4 raw bytes', 'cv.pdf'));
+        $returnedId = $handler(new UploadCv('%PDF-1.4 raw bytes', 'cv.pdf', 'owner-1'));
 
         self::assertTrue($returnedId->equals($id));
         self::assertSame('cv.pdf', $profiles->ofId($id)->sourceFileName);
@@ -48,6 +48,6 @@ final class UploadCvHandlerTest extends TestCase
 
         $this->expectException(InvalidCvProfileData::class);
 
-        $handler(new UploadCv('%PDF-1.4 raw bytes', 'cv.pdf'));
+        $handler(new UploadCv('%PDF-1.4 raw bytes', 'cv.pdf', 'owner-1'));
     }
 }

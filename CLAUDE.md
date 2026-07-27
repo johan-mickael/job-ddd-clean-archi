@@ -102,8 +102,9 @@ Model these as separate contexts under the coding standard. Do not let France Tr
 - **Job Ingestion** — talks to France Travail, owns the anti-corruption mapping, sync scheduling, and expiry reconciliation. Its job is to hand clean domain `Job` aggregates to the rest of the system.
 - **Job Catalog** — the `Job` aggregate as the rest of the app knows it (Postgres). Domain-meaningful, framework-free.
 - **Search** — indexing projection + hybrid query. Elasticsearch lives entirely here, behind a domain-defined search port.
-- **Candidate Profile** — CV upload, text extraction, structured profile (skills, experience, seniority, domains). Deliberately **omits** France Travail personal-contact data.
+- **Candidate Profile** — CV upload, text extraction, structured profile (skills, experience, seniority, domains). Deliberately **omits** France Travail personal-contact data. Owned by the uploading user (`ownerId`); every read/list use case scopes to the requester and treats "not yours" as "not found."
 - **Matching** — given a profile, retrieve + rank jobs, and produce the grounded "why this matches" explanation (the only place RAG belongs).
+- **Identity** — user registration and authentication (Symfony Security + JWT). Exposes "who's asking" to every other context via a `Shared`-defined port (`CurrentUserIdProviderInterface`) rather than those contexts depending on Identity's Infrastructure directly.
 
 Model the domain around **our** concepts (skills, seniority, contract type, ROME code), never around France Travail's raw response fields.
 
